@@ -1,0 +1,44 @@
+<main class="container mx-auto px-6 py-12">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6">О проекте</h2>
+        <div class="bg-white p-8 rounded-2xl shadow-sm mb-12 border border-slate-100">
+            <p class="mb-4">Этот веб-проект демонстрирует возможности интеграции ИИ в процессы управления данными. Мы использовали нейросети для генерации контента, анализа структур и создания интерфейсов.</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>AI Image:</strong> Midjourney / DALL-E 3</li>
+                <li><strong>AI Audio:</strong> Suno AI</li>
+                <li><strong>Code:</strong> Gemini / ChatGPT</li>
+            </ul>
+        </div>
+
+        <div id="chatbox" class="bg-slate-50 border rounded-2xl overflow-hidden shadow-lg flex flex-col h-[400px]">
+            <div class="bg-blue-600 p-4 text-white font-bold">Спросите DQ-Ассистента</div>
+            <div id="chatMessages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm text-left">
+                <div class="bg-blue-100 p-3 rounded-lg max-w-[80%]">Привет! Я AI-бот. Что вы хотите узнать о качестве данных?</div>
+            </div>
+            <div class="p-4 border-t flex">
+                <input type="text" id="chatInput" placeholder="Введите сообщение..." class="flex-grow p-2 border rounded-l-lg outline-none">
+                <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 rounded-r-lg">Отправить</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const container = document.getElementById('chatMessages');
+        if (input.value.trim() === "") return;
+
+        // Message user
+        const userMsg = `<div class="bg-white p-3 rounded-lg max-w-[80%] self-end ml-auto border">${input.value}</div>`;
+        container.innerHTML += userMsg;
+        
+        // Mock bot response
+        setTimeout(() => {
+            container.innerHTML += `<div class="bg-blue-100 p-3 rounded-lg max-w-[80%]">Это интересный вопрос о "${input.value}". Для детального анализа качества данных рекомендуется проверить полноту выборки.</div>`;
+            container.scrollTop = container.scrollHeight;
+        }, 1000);
+
+        input.value = "";
+    }
+</script>
