@@ -161,147 +161,46 @@
                 <div class="status-dot"></div>
                 <div>
                     <strong>DataQuality Семантический Агент</strong>
-                    <div style="font-size: 0.75rem; color: #bdc3c7;">NLP Ядро активна | Контекст включен</div>
+                    <div style="font-size: 0.75rem; color: #bdc3c7;">NLP Ядро активно | Контекст включен</div>
                 </div>
             </div>
-            <div class="brain-load" id="brainLoad">Память: 0 куплетов</div>
+            <div class="brain-load" id="brainLoad">Выучено терминов: +0</div>
         </div>
 
         <div class="chat-messages" id="chatWindow">
             <div class="message bot">
-                Приветствую! Я обновленная экспертная система. Я умею распознавать эмоции, запоминать контекст разговора и обучаться новым терминам прямо в ходе беседы.
+                Приветствую! Я обновленная экспертная система. Я умею распознавать эмоции, запоминать контекст разговора и обучать себя новым терминам прямо в ходе беседы.
                 <br><br>
-                Если вы хотите проверить свою базу данных, напишите <b>"начать аудит"</b>. Или просто задайте любой профессиональный вопрос!
+                Если вы хотите проверить свою базу данных, нажмите кнопку <b>"Начать аудит"</b> или напишите это вручную. Также вы можете задать любой профессиональный вопрос по качеству данных!
             </div>
         </div>
 
         <div class="suggested-hints" id="hintsContainer">
             <button class="hint-btn" onclick="useHint('Начать аудит данных')">📊 Начать аудит</button>
             <button class="hint-btn" onclick="useHint('У нас все плохо с базами, куча ошибок!')">⚠️ Проверить негативный контекст</button>
-            <button class="hint-btn" onclick="useHint('Что такое Data Governance?')">💡 Что такое Data Governance?</button>
+            <button class="hint-btn" onclick="useHint('What is Data Governance?')">💡 Что такое Data Governance?</button>
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Напишите мне что-нибудь (например: у нас много дубликатов в системе)..." onkeypress="handleKeyPress(event)">
+            <input type="text" id="userInput" placeholder="Напишите мне что-нибудь (например: у нас много дубликатов)..." onkeypress="handleKeyPress(event)">
             <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 </main>
 
 <script>
-    // СОСТОЯНИЯ ДИАЛОГА
+    // ГЛОБАЛЬНЫЕ СОСТОЯНИЯ ДИАЛОГА
     let currentState = 'IDLE'; 
     let auditData = { system: '', completeness: 0, accuracy: 0 };
+    let lastUnknownKeyword = '';
     
-    // БАЗА ЗНАНИЙ С ВЕСАМИ КЛЮЧЕВЫХ СЛОВ (NLP структура)
+    // СТАТИЧЕСКАЯ БАЗА ЗНАНИЙ
     let knowledgeBase = {
-        'governance': '<b>Data Governance (Управление данными)</b> — это комплексная дисциплина, включающая людей, процессы и ИТ-технологии, направленная на создание однозначного и структурированного контроля над корпоративными данными.',
-        'полнот': '<b>Полнота (Completeness)</b> измеряет долю заполненных обязательных реквизитов (например, ИИН, email). Пропуски (NULL-значения) возникают из-за плохой эргономики интерфейсов.',
-        'точност': '<b>Точность (Accuracy)</b> отражает уровень соответствия данных реальному положению дел. База может быть полной, но содержать устаревшие или сфабрикованные записи.',
-        'дубликат': 'Для борьбы с <b>дубликатами</b> ИИ-агент рекомендует использовать алгоритмы нечеткого поиска (например, Расстояние Левенштейна), сопоставляющие похожие имена или некорректные ИИН.',
+        'governance': '<b>Data Governance (Управление данными)</b> — это комплексная дисциплина, направленная на создание однозначного и структурированного контроля над корпоративными и государственными данными.',
+        'полнот': '<b>Полнота (Completeness)</b> измеряет долю заполненных обязательных реквизитов (например, ИИН, ФИО, контакты). Пропуски в полях сильно искажают общую аналитику.',
+        'точност': '<b>Точность (Accuracy)</b> отражает уровень соответствия данных реальному положению дел. База может быть заполненной на 100%, но содержать вымышленные или устаревшие записи.',
+        'дубликат': 'Для борьбы с <b>дубликатами строк</b> рекомендуется использовать алгоритмы дедупликации и нечеткого поиска, сопоставляющие похожие имена или опечатки в ИИН.',
         'метрики': 'Основные метрики качества данных в ИКТ: Полнота (Completeness), Точность (Accuracy), Своевременность (Timeliness) и Непротиворечивость (Consistency).'
     };
 
-    // ПЕРЕМЕННАЯ ДЛЯ ОБУЧЕНИЯ (Специфический стейт)
-    let lastUnknownKeyword = '';
-
-    // Обновление счетчика выученных терминов в шапке
-    function updateBrainLoad() {
-        const customKeys = Object.keys(knowledgeBase).length - 5; 
-        document.getElementById('brainLoad').innerText = `Выучено терминов: +${customKeys}`;
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        appendMessage(text, 'user');
-        input.value = '';
-
-        setTimeout(() => {
-            const response = coreEngine(text);
-            appendMessage(response, 'bot');
-            updateBrainLoad();
-        }, 500);
-    }
-
-    // СЕРДЦЕ ИИ: СЕМАНТИЧЕСКОЕ ЯДРО И ОБРАБОТКА КОНТЕНТА
-    function coreEngine(rawText) {
-        const cleanText = rawText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-        
-        // 1. ПРОВЕРКА НАХОЖДЕНИЯ В РЕЖИМЕ ОБУЧЕНИЯ БОТА
-        if (currentState === 'LEARNING_PROCESS') {
-            knowledgeBase[lastUnknownKeyword] = `<b>${lastUnknownKeyword.toUpperCase()} (Вы обучили бота):</b> ${rawText}`;
-            currentState = 'IDLE';
-            updateHints(['Начать аудит данных', 'Что такое Data Governance?']);
-            return `Отлично! Я занес термин "<b>${lastUnknownKeyword}</b>" в свою базу знаний и связал его с вашим определением. Можете проверить меня, спросив про этот термин!`;
-        }
-
-        // 2. ПРОВЕРКА НАХОЖДЕНИЯ В РЕЖИМЕ АУДИТА (State Machine)
-        if (currentState.startsWith('AUDIT_')) {
-            return handleAuditStateMachine(cleanText, rawText);
-        }
-
-        // Включение аудита по триггерам
-        if (cleanText.includes('аудит') || cleanText.includes('проверить систему') || cleanText.includes('начать')) {
-            currentState = 'AUDIT_SYS';
-            updateHints(['CRM Система', 'Гос. база данных', 'ERP']);
-            return 'Запущен интерактивный сессионный аудит. Как называется целевая информационная система?';
-        }
-
-        // 3. АНАЛИЗ ТОНАЛЬНОСТИ РЕЧИ (Sentiment Analysis)
-        if (cleanText.includes('плохо') || cleanText.includes('ужас') || cleanText.includes('ошибк') || cleanText.includes('мусор')) {
-            updateHints(['Начать аудит для исправления ошибок', 'Как убрать дубликаты?']);
-            return '⚠️ <b>Обнаружен негативный контекст качества данных!</b> Я чувствую, что ваши базы данных замусорены. Низкое качество данных ведет к финансовым потерям. Давайте проведем экспресс-аудит? Напишите "аудит".';
-        }
-
-        // 4. СЕМАНТИЧЕСКИЙ ПОИСК ПО БАЗЕ ЗНАНИЙ (Стемминг/Корни слов)
-        for (let key in knowledgeBase) {
-            if (cleanText.includes(key)) {
-                return knowledgeBase[key];
-            }
-        }
-
-        // Казуальные фразы
-        if (cleanText.includes('привет') || cleanText.includes('салем')) return 'Здравствуйте! Я на связи. Готов обсудить архитектуру данных.';
-        if (cleanText.includes('как дела')) return 'Моя нейросетевая модель стабильна, логов ошибок в памяти не обнаружено. Как продвигается защита вашего проекта по ИКТ?';
-
-        // 5. РЕЖИМ САМООБУЧЕНИЯ (Если бот зашел в тупик)
-        currentState = 'LEARNING_PROCESS';
-        // Выделяем первое слово как ключевое для обучения
-        const words = cleanText.split(' ');
-        lastUnknownKeyword = words[0].length > 3 ? words[0] : 'качество';
-        
-        updateHints(['Это дисциплина контроля данных', 'Это важная ИКТ метрика']);
-        return `🤖 Хм... Мой семантический анализатор не нашел совпадений для корня "${lastUnknownKeyword}". 
-        <br><br>
-        Я хочу стать умнее. <b>Обучите меня!</b> Напишите в следующем сообщении, что означает ваше выражение/термин, и я его запомню!`;
-    }
-
-    // УПРАВЛЕНИЕ СЦЕНАРИЕМ АУДИТА
-    function handleAuditStateMachine(cleanText, originalText) {
-        switch(currentState) {
-            case 'AUDIT_SYS':
-                auditData.system = originalText;
-                currentState = 'AUDIT_COMP';
-                updateHints(['95%', '60%', '85%']);
-                return `Зафиксировано. Система: <b>${auditData.system}</b>. <br>Укажите процент <b>Полноты (Completeness)</b> данных в ней:`;
-            
-            case 'AUDIT_COMP':
-                auditData.completeness = parseInt(cleanText.replace(/[^0-9]/g, '')) || 100;
-                currentState = 'AUDIT_ACC';
-                updateHints(['98%', '45%', '75%']);
-                return `Полнота принята (${auditData.completeness}%). Каков уровень <b>Точности (Accuracy)</b> информации внутри этой системы?`;
-            
-            case 'AUDIT_ACC':
-                auditData.accuracy = parseInt(cleanText.replace(/[^0-9]/g, '')) || 100;
-                currentState = 'IDLE';
-                updateHints(['Начать аудит данных', 'Что такое дубликаты?']);
-                
-                // Расчет вердикта
-                let status = auditData.accuracy >= 95 ? '<span style="color:#1abc9c">ОТЛИЧНО</span>' : (auditData.accuracy >= 80 ? '<span style="color:#f1c40f">НОРМА</span>' : '<span style="color:#e74c3c">КРИТИЧНО</span>');
-                return `<b>📊 Математический вердикт ИИ-агента для «${auditData.system}»:</b><br>
-                Интегральный индекс качества: <b>${((auditData.completeness + auditData.accuracy)/2).toFixed(0)}%</b>.<br>
-                Статус безопасности: <b>${status}</b>.<br><br>
-                <i>Рекомендация:</i> ${auditData.accuracy < 80 ? 'Требуется немедленное внедрение регулярных масок валидации типов полей.' : 'Инфраструктура стаби
+    //
