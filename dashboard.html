@@ -49,7 +49,7 @@
             flex-wrap: wrap;
         }
 
-        .add-row-form input, .add-row-form select {
+        .add-row-form input {
             padding: 8px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
@@ -79,6 +79,11 @@
             background-color: #fff;
             outline: 2px solid #1abc9c;
         }
+
+        /* Кастомные статусы для авторасчета */
+        .badge-excellent { background: #d1fae5; color: #065f46; }
+        .badge-normal { background: #fef3c7; color: #92400e; }
+        .badge-critical { background: #fee2e2; color: #991b1b; }
 
         .ai-control-panel {
             background: #1a252f; color: white; padding: 30px; border-radius: 15px; margin-top: 40px;
@@ -110,7 +115,7 @@
         <div class="menu">
             <a href="index.html">Главная</a>
             <a href="dashboard.html" class="active">Анализ данных</a>
-            <a href="bot.html">Помощник по quality</a>
+            <a href="bot.html">Помощник по качеству</a>
             <a href="creators.html">Авторы</a>
         </div>
     </nav>
@@ -118,11 +123,11 @@
 
 <main>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-        <h2><i class="fas fa-tachometer-alt"></i> Динамический Системный Аудит</h2>
+        <h2><i class="fas fa-tachometer-alt"></i> Автоматизированный ИИ-Дашборд</h2>
         <div>
             <span style="font-size: 0.9rem; color: #666;">Фильтр: </span>
             <button class="filter-btn active" onclick="filterTable('all', this)">Все</button>
-            <button class="filter-btn" onclick="filterTable('bad', this)">Ошибки</button>
+            <button class="filter-btn" onclick="filterTable('bad', this)">Ошибки/Критично</button>
         </div>
     </div>
 
@@ -132,48 +137,33 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th>Система (Клик для ред.)</th>
+                            <th>Система</th>
                             <th>Полнота</th>
-                            <th>Точность</th>
-                            <th>Статус</th>
+                            <th>Точность (Измените %)</th>
+                            <th>Авто-Статус</th>
                             <th>Действие</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-status="good">
-                            <td contenteditable="true" oninput="updateChartFromTable()">CRM Система</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">94%</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">88%</td>
-                            <td>
-                                <select onchange="updateRowStatus(this)">
-                                    <option value="good" selected>Отлично / Норма</option>
-                                    <option value="bad">Критично / Ошибки</option>
-                                </select>
-                            </td>
+                        <tr>
+                            <td contenteditable="true">CRM Система</td>
+                            <td contenteditable="true">94%</td>
+                            <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">88%</td>
+                            <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
                         </tr>
-                        <tr data-status="good">
-                            <td contenteditable="true" oninput="updateChartFromTable()">Бухгалтерия (ERP)</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">99%</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">97%</td>
-                            <td>
-                                <select onchange="updateRowStatus(this)">
-                                    <option value="good" selected>Отлично / Норма</option>
-                                    <option value="bad">Критично / Ошибки</option>
-                                </select>
-                            </td>
+                        <tr>
+                            <td contenteditable="true">Бухгалтерия (ERP)</td>
+                            <td contenteditable="true">99%</td>
+                            <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">97%</td>
+                            <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
                         </tr>
-                        <tr data-status="bad">
-                            <td contenteditable="true" oninput="updateChartFromTable()">Кадровый учет (HR)</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">72%</td>
-                            <td contenteditable="true" oninput="updateChartFromTable()">65%</td>
-                            <td>
-                                <select onchange="updateRowStatus(this)">
-                                    <option value="good">Отлично / Норма</option>
-                                    <option value="bad" selected>Критично / Ошибки</option>
-                                </select>
-                            </td>
+                        <tr>
+                            <td contenteditable="true">Кадровый учет (HR)</td>
+                            <td contenteditable="true">72%</td>
+                            <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">65%</td>
+                            <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
                         </tr>
                     </tbody>
@@ -182,12 +172,8 @@
 
             <div class="add-row-form">
                 <input type="text" id="newSystem" placeholder="Название системы" style="flex: 2;">
-                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 85%)" style="flex: 1;">
-                <input type="text" id="newAccuracy" placeholder="Точность (напр. 80%)" style="flex: 1;">
-                <select id="newStatus" style="flex: 1.5;">
-                    <option value="good">Отлично / Норма</option>
-                    <option value="bad">Критично / Ошибки</option>
-                </select>
+                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 90%)" style="flex: 1;">
+                <input type="text" id="newAccuracy" placeholder="Точность (напр. 75%)" style="flex: 1;">
                 <button class="btn-action btn-add" onclick="addNewRow()"><i class="fas fa-plus"></i> Добавить</button>
             </div>
         </div>
@@ -215,11 +201,11 @@
     <div class="recommendation-cards" id="recCards">
         <div class="rec-card">
             <h4><i class="fas fa-broom"></i> Очистка данных</h4>
-            <p>Рекомендуется удалить дубликаты, выявленные ИИ-агентом по кросс-табличным связям.</p>
+            <p>Рекомендуется запустить скрипт дедупликации для полей с критическим уровнем качества.</p>
         </div>
         <div class="rec-card">
             <h4><i class="fas fa-check-double"></i> Валидация</h4>
-            <p>Внедрите автоматические маски ограничений для полей, где зафиксирован статус "Критично".</p>
+            <p>Внедрите ограничения масок ввода на уровне СУБД для исправления аномалий.</p>
         </div>
     </div>
 </main>
@@ -227,16 +213,15 @@
 <script>
     let qualityChart;
 
-    // Инициализация графика
     window.onload = function() {
         const ctx = document.getElementById('qualityChart').getContext('2d');
         qualityChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Норма / Отлично', 'Критично / Ошибки'],
+                labels: ['Отлично (>=95%)', 'Норма (80-94%)', 'Критично (<80%)'],
                 datasets: [{
-                    data: [0, 0], // Будет заполнено функцией пересчета
-                    backgroundColor: ['#1abc9c', '#e74c3c'],
+                    data: [0, 0, 0],
+                    backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
                     borderWidth: 0
                 }]
             },
@@ -247,87 +232,93 @@
             }
         });
         
-        // Первичный расчет данных из таблицы в график
-        updateChartFromTable();
+        // Первичный расчет статусов при загрузке
+        calculateStatuses();
     };
 
-    // ФУНКЦИЯ СВЯЗИ: Пересчитывает строки и обновляет график
-    function updateChartFromTable() {
-        let goodCount = 0;
-        let badCount = 0;
+    // ГЛАВНАЯ ФУНКЦИЯ: Парсит проценты, выставляет статусы и обновляет график
+    function calculateStatuses() {
+        let excellentCount = 0;
+        let normalCount = 0;
+        let criticalCount = 0;
 
         const rows = document.querySelectorAll('#dataTable tbody tr');
+        
         rows.forEach(row => {
-            const status = row.getAttribute('data-status');
-            if (status === 'good') goodCount++;
-            if (status === 'bad') badCount++;
+            const accuracyCell = row.querySelector('.accuracy-cell');
+            const statusCell = row.querySelector('.status-cell');
+            
+            // Извлекаем только цифры из ячейки точности (удаляем знак % если он есть)
+            let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
+
+            // Логика автоматического определения
+            if (accuracyValue >= 95) {
+                statusCell.innerHTML = `<span class="status-badge badge-excellent">Отлично</span>`;
+                row.setAttribute('data-status', 'excellent');
+                excellentCount++;
+            } else if (accuracyValue >= 80 && accuracyValue < 95) {
+                statusCell.innerHTML = `<span class="status-badge badge-normal">Норма</span>`;
+                row.setAttribute('data-status', 'normal');
+                normalCount++;
+            } else {
+                statusCell.innerHTML = `<span class="status-badge badge-critical">Критично</span>`;
+                row.setAttribute('data-status', 'bad'); // Для фильтра "Ошибки"
+                criticalCount++;
+            }
         });
 
-        // Передаем новые данные в Chart.js и обновляем его
-        qualityChart.data.datasets[0].data = [goodCount, badCount];
-        qualityChart.update();
+        // Передача обновленных массивов в график Chart.js
+        if (qualityChart) {
+            qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
+            qualityChart.update();
+        }
     }
 
-    // Изменение статуса через выпадающий список в строке
-    function updateRowStatus(selectElem) {
-        const row = selectElem.closest('tr');
-        row.setAttribute('data-status', selectElem.value);
-        updateChartFromTable();
-    }
-
-    // Удаление строки таблицы
+    // Удаление строки
     function deleteRow(buttonElem) {
-        const row = buttonElem.closest('tr');
-        row.remove();
-        updateChartFromTable();
+        buttonElem.closest('tr').remove();
+        calculateStatuses();
     }
 
     // Добавление новой строки
     function addNewRow() {
         const system = document.getElementById('newSystem').value.trim();
         const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
-        const accuracy = document.getElementById('newAccuracy').value.trim() || '100%';
-        const status = document.getElementById('newStatus').value;
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
 
         if (!system) {
-            alert('Пожалуйста, введите название системы!');
+            alert('Пожалуйста, укажите название информационной системы!');
             return;
         }
 
         const tbody = document.querySelector('#dataTable tbody');
         const newTr = document.createElement('tr');
-        newTr.setAttribute('data-status', status);
 
         newTr.innerHTML = `
-            <td contenteditable="true" oninput="updateChartFromTable()">${system}</td>
-            <td contenteditable="true" oninput="updateChartFromTable()">${completeness}</td>
-            <td contenteditable="true" oninput="updateChartFromTable()">${accuracy}</td>
-            <td>
-                <select onchange="updateRowStatus(this)">
-                    <option value="good" ${status === 'good' ? 'selected' : ''}>Отлично / Норма</option>
-                    <option value="bad" ${status === 'bad' ? 'selected' : ''}>Критично / Ошибки</option>
-                </select>
-            </td>
+            <td contenteditable="true">${system}</td>
+            <td contenteditable="true">${completeness}</td>
+            <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">${accuracy}</td>
+            <td class="status-cell"></td>
             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
         `;
 
         tbody.appendChild(newTr);
-        updateChartFromTable();
+        calculateStatuses(); // Автоматический расчет для новой строки
 
-        // Очищаем поля ввода
+        // Сброс полей ввода
         document.getElementById('newSystem').value = '';
         document.getElementById('newCompleteness').value = '';
         document.getElementById('newAccuracy').value = '';
     }
 
-    // Фильтр таблицы
+    // Фильтр таблицы (Все / Только критичные ошибки)
     function filterTable(status, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const rows = document.querySelectorAll('#dataTable tbody tr');
         rows.forEach(row => {
             if (status === 'all') row.style.display = '';
-            else row.style.display = row.getAttribute('data-status') === status ? '' : 'none';
+            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
         });
     }
 
@@ -349,9 +340,9 @@
             if (progress > 100) progress = 100;
             progBar.style.width = progress + "%";
             
-            if (progress < 40) output.innerText = "> [SCANNING]: Считывание пользовательских изменений...";
-            else if (progress < 80) output.innerText = "> [AI LOGIC]: Пересчет весов по новым наборам данных...";
-            else output.innerText = "> [COMPLETE]: Оптимальные паттерны выведены.";
+            if (progress < 40) output.innerText = "> [SCANNING]: Чтение динамических изменений табличной части...";
+            else if (progress < 80) output.innerText = "> [AI PROCESS]: Пересчет критических весов и сегментов диаграммы...";
+            else output.innerText = "> [COMPLETE]: Оптимальные паттерны для выработки рекомендаций зафиксированы.";
 
             if (progress >= 100) {
                 clearInterval(interval);
