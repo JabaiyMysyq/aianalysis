@@ -95,11 +95,21 @@
 
         .progress-bar { width: 0%; height: 100%; background: #1abc9c; border-radius: 5px; transition: width 0.1s; }
 
-        .recommendation-cards {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; display: none;
+        /* Контейнер детального аналитического отчета ИИ */
+        .ai-report-box {
+            background: #2c3e50;
+            border-left: 5px solid #1abc9c;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+            color: #ecf0f1;
         }
 
-        .rec-card { background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #1abc9c; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .ai-report-box h4 { margin-top: 0; color: #1abc9c; font-size: 1.1rem; }
+        .ai-report-box p { margin: 8px 0; font-size: 0.95rem; }
+        .ai-report-box ul { margin: 5px 0 0 20px; padding: 0; }
+        .ai-report-box li { margin-bottom: 5px; font-size: 0.9rem; }
 
         .filter-btn {
             padding: 8px 15px; border: 1px solid #1abc9c; background: transparent; color: #1abc9c; cursor: pointer; border-radius: 5px; margin-right: 10px; transition: 0.3s; font-weight: bold;
@@ -138,8 +148,8 @@
                     <thead>
                         <tr>
                             <th>Система</th>
-                            <th>Полнота</th>
-                            <th>Точность (Измените %)</th>
+                            <th>Полнота (Клик для ред.)</th>
+                            <th>Точность (Клик для ред.)</th>
                             <th>Авто-Статус</th>
                             <th>Действие</th>
                         </tr>
@@ -147,21 +157,21 @@
                     <tbody>
                         <tr>
                             <td contenteditable="true">CRM Система</td>
-                            <td contenteditable="true">94%</td>
+                            <td contenteditable="true" class="completeness-cell" oninput="calculateStatuses()">94%</td>
                             <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">88%</td>
                             <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
                         </tr>
                         <tr>
                             <td contenteditable="true">Бухгалтерия (ERP)</td>
-                            <td contenteditable="true">99%</td>
+                            <td contenteditable="true" class="completeness-cell" oninput="calculateStatuses()">99%</td>
                             <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">97%</td>
                             <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
                         </tr>
                         <tr>
                             <td contenteditable="true">Кадровый учет (HR)</td>
-                            <td contenteditable="true">72%</td>
+                            <td contenteditable="true" class="completeness-cell" oninput="calculateStatuses()">72%</td>
                             <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">65%</td>
                             <td class="status-cell"></td>
                             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
@@ -187,27 +197,19 @@
     <section class="ai-control-panel">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
             <div>
-                <h3><i class="fas fa-microchip"></i> AI-Агент: Глубокая проверка</h3>
-                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к динамическому анализу текущей таблицы...</p>
+                <h3><i class="fas fa-microchip"></i> Аналитический ИИ-Агент</h3>
+                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к сканированию бизнес-метрик и поиску скрытых аномалий...</p>
             </div>
             <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding:15px 25px; background:#1abc9c; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">
                 <i class="fas fa-play"></i> Запустить ИИ-аудит
             </button>
         </div>
+        
         <div class="progress-container" id="progCont"><div class="progress-bar" id="progBar"></div></div>
         <div id="aiOutput" style="margin-top:20px; font-family:'Courier New', monospace; font-size:0.9rem; color:#1abc9c; display:none;"></div>
+        
+        <div class="ai-report-box" id="aiReportBox"></div>
     </section>
-
-    <div class="recommendation-cards" id="recCards">
-        <div class="rec-card">
-            <h4><i class="fas fa-broom"></i> Очистка данных</h4>
-            <p>Рекомендуется запустить скрипт дедупликации для полей с критическим уровнем качества.</p>
-        </div>
-        <div class="rec-card">
-            <h4><i class="fas fa-check-double"></i> Валидация</h4>
-            <p>Внедрите ограничения масок ввода на уровне СУБД для исправления аномалий.</p>
-        </div>
-    </div>
 </main>
 
 <script>
@@ -232,11 +234,10 @@
             }
         });
         
-        // Первичный расчет статусов при загрузке
         calculateStatuses();
     };
 
-    // ГЛАВНАЯ ФУНКЦИЯ: Парсит проценты, выставляет статусы и обновляет график
+    // Парсинг процентов, простановка статусов и обновление графика
     function calculateStatuses() {
         let excellentCount = 0;
         let normalCount = 0;
@@ -248,10 +249,8 @@
             const accuracyCell = row.querySelector('.accuracy-cell');
             const statusCell = row.querySelector('.status-cell');
             
-            // Извлекаем только цифры из ячейки точности (удаляем знак % если он есть)
             let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
 
-            // Логика автоматического определения
             if (accuracyValue >= 95) {
                 statusCell.innerHTML = `<span class="status-badge badge-excellent">Отлично</span>`;
                 row.setAttribute('data-status', 'excellent');
@@ -262,12 +261,11 @@
                 normalCount++;
             } else {
                 statusCell.innerHTML = `<span class="status-badge badge-critical">Критично</span>`;
-                row.setAttribute('data-status', 'bad'); // Для фильтра "Ошибки"
+                row.setAttribute('data-status', 'bad');
                 criticalCount++;
             }
         });
 
-        // Передача обновленных массивов в график Chart.js
         if (qualityChart) {
             qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
             qualityChart.update();
@@ -296,22 +294,21 @@
 
         newTr.innerHTML = `
             <td contenteditable="true">${system}</td>
-            <td contenteditable="true">${completeness}</td>
+            <td contenteditable="true" class="completeness-cell" oninput="calculateStatuses()">${completeness}</td>
             <td contenteditable="true" class="accuracy-cell" oninput="calculateStatuses()">${accuracy}</td>
             <td class="status-cell"></td>
             <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
         `;
 
         tbody.appendChild(newTr);
-        calculateStatuses(); // Автоматический расчет для новой строки
+        calculateStatuses();
 
-        // Сброс полей ввода
         document.getElementById('newSystem').value = '';
         document.getElementById('newCompleteness').value = '';
         document.getElementById('newAccuracy').value = '';
     }
 
-    // Фильтр таблицы (Все / Только критичные ошибки)
+    // Фильтр таблицы
     function filterTable(status, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -322,35 +319,90 @@
         });
     }
 
-    // Логика работы ИИ-агента
+    // ГЛУБОКИЙ АНАЛИЗ ДАННЫХ ИИ-АГЕНТОМ
     function startAdvancedAnalysis() {
         const btn = document.getElementById('aiBtn');
         const progCont = document.getElementById('progCont');
         const progBar = document.getElementById('progBar');
-        const status = document.getElementById('agentStatus');
+        const statusText = document.getElementById('agentStatus');
         const output = document.getElementById('aiOutput');
-        const recCards = document.getElementById('recCards');
+        const reportBox = document.getElementById('aiReportBox');
 
         btn.disabled = true; btn.style.opacity = "0.5";
-        progCont.style.display = "block"; output.style.display = "block"; recCards.style.display = "none";
+        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
 
         let progress = 0;
         const interval = setInterval(() => {
-            progress += Math.random() * 20;
+            progress += Math.random() * 25;
             if (progress > 100) progress = 100;
             progBar.style.width = progress + "%";
             
-            if (progress < 40) output.innerText = "> [SCANNING]: Чтение динамических изменений табличной части...";
-            else if (progress < 80) output.innerText = "> [AI PROCESS]: Пересчет критических весов и сегментов диаграммы...";
-            else output.innerText = "> [COMPLETE]: Оптимальные паттерны для выработки рекомендаций зафиксированы.";
+            if (progress < 35) output.innerText = "> [SCANNING]: Извлечение весов и названий баз из DOM-структуры...";
+            else if (progress < 70) output.innerText = "> [AI_LOGIC]: Расчет корреляции между Completeness и Accuracy...";
+            else output.innerText = "> [GENERATING REPORT]: Маппинг уязвимостей по методологии Data Governance...";
 
             if (progress >= 100) {
                 clearInterval(interval);
-                status.innerText = "Динамический аудит завершен!";
-                recCards.style.display = "grid";
+                
+                // Начинаем парсинг реальных данных таблицы для отчета
+                const rows = document.querySelectorAll('#dataTable tbody tr');
+                let totalRows = rows.length;
+                
+                if (totalRows === 0) {
+                    reportBox.innerHTML = "<h4>[ОТЧЕТ ИИ-АГЕНТА]: Таблица пуста. Загрузите данные для анализа.</h4>";
+                    reportBox.style.display = "block";
+                    return;
+                }
+
+                let sumCompleteness = 0;
+                let sumAccuracy = 0;
+                let worstSystem = "";
+                let worstAccuracy = 101; // Инициализируем числом заведомо больше 100
+                let worstCompleteness = 0;
+
+                rows.forEach(row => {
+                    const name = row.cells[0].innerText;
+                    const compVal = parseInt(row.querySelector('.completeness-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+                    const accVal = parseInt(row.querySelector('.accuracy-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+
+                    sumCompleteness += compVal;
+                    sumAccuracy += accVal;
+
+                    // Находим систему с худшей точностью
+                    if (accVal < worstAccuracy) {
+                        worstAccuracy = accVal;
+                        worstCompleteness = compVal;
+                        worstSystem = name;
+                    }
+                });
+
+                let avgCompleteness = (sumCompleteness / totalRows).toFixed(1);
+                let avgAccuracy = (sumAccuracy / totalRows).toFixed(1);
+
+                // Динамическая генерация HTML отчета на основе расчетов
+                reportBox.innerHTML = `
+                    <h4><i class="fas fa-file-medical-alt"></i> Сводный аналитический отчет ИИ-агента</h4>
+                    <p><strong>1. Общие показатели инфраструктуры:</strong></p>
+                    <ul>
+                        <li>Проанализировано информационных систем: <strong>${totalRows}</strong></li>
+                        <li>Средний уровень полноты (Completeness): <span style="color: #1abc9c;"><strong>${avgCompleteness}%</strong></span></li>
+                        <li>Средний уровень точности (Accuracy): <span style="color: #1abc9c;"><strong>${avgAccuracy}%</strong></span></li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>2. Главная системная уязвимость:</strong></p>
+                    <p>Критическая зона обнаружена в источнике <strong>«${worstSystem}»</strong> (Точность: ${worstAccuracy}%, Полнота: ${worstCompleteness}%).</p>
+                    <p><em>Следствие для менеджмента:</em> Низкая точность данных в «${worstSystem}» на уровне ${worstAccuracy}% делает любые автоматические отчеты по этой системе компрометирующими и ведет к неверным управленческим решениям.</p>
+                    <p style="margin-top: 15px;"><strong>3. Предписания ИИ по стабилизации качества:</strong></p>
+                    <ul>
+                        <li>Для <strong>«${worstSystem}»</strong>: Немедленно развернуть скрипт дедупликации и верифицировать ИИН/контакты через государственные шлюзы.</li>
+                        <li>Для остальных систем: Настроить регулярный автоматический аудит пропущенных значений (NULL-значений) каждые 24 часа.</li>
+                    </ul>
+                `;
+
+                statusText.innerText = "Динамический аудит завершен!";
+                reportBox.style.display = "block";
                 btn.innerHTML = "<i class='fas fa-check'></i> Аудит выполнен";
             }
-        }, 250);
+        }, 200);
     }
 </script>
 
