@@ -7,18 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Дополнительные стили для интерактивности */
+        /* Сетка для таблицы и графика */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 20px;
+            align-items: start;
         }
 
         @media (max-width: 900px) {
             .dashboard-grid { grid-template-columns: 1fr; }
         }
 
+        /* Контейнер для графика с жестким ограничением высоты */
         .chart-container-box {
             background: white;
             padding: 20px;
@@ -28,8 +30,21 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 320px;
+            height: 340px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
 
+        .chart-container-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        /* Панель управления ИИ-агентом */
         .ai-control-panel {
             background: #1a252f;
             color: white;
@@ -40,6 +55,7 @@
             overflow: hidden;
         }
 
+        /* Анимированный прогресс-бар */
         .progress-container {
             width: 100%;
             background: #34495e;
@@ -57,12 +73,13 @@
             transition: width 0.1s;
         }
 
+        /* Карточки рекомендаций ИИ */
         .recommendation-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 30px;
-            display: none; /* Появляются после работы ИИ */
+            display: none;
         }
 
         .rec-card {
@@ -73,6 +90,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
+        /* Интерактивные кнопки фильтрации */
         .filter-btn {
             padding: 8px 15px;
             border: 1px solid #1abc9c;
@@ -82,6 +100,7 @@
             border-radius: 5px;
             margin-right: 10px;
             transition: 0.3s;
+            font-weight: bold;
         }
 
         .filter-btn.active, .filter-btn:hover {
@@ -105,7 +124,7 @@
 </header>
 
 <main>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
         <h2><i class="fas fa-tachometer-alt"></i> Интерактивный Дашборд Качества</h2>
         <div>
             <span style="font-size: 0.9rem; color: #666;">Фильтр: </span>
@@ -156,15 +175,15 @@
 
         <div class="chart-container-box">
             <h3>Распределение качества</h3>
-            <canvas id="qualityChart" width="300" height="300"></canvas>
+            <canvas id="qualityChart"></canvas>
         </div>
     </div>
 
     <section class="ai-control-panel">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
             <div>
                 <h3><i class="fas fa-microchip"></i> AI-Агент: Глубокая проверка</h3>
-                <p id="agentStatus">Готов к анализу структуры данных по 4-м метрикам...</p>
+                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к анализу структуры данных по 4-м метрикам...</p>
             </div>
             <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding:15px 25px; background:#1abc9c; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">
                 <i class="fas fa-play"></i> Запустить ИИ-аудит
@@ -197,12 +216,12 @@
 </main>
 
 <script>
-    // 1. Инициализация графика при загрузке
+    // Инициализация фиксированного графика Chart.js
     const ctx = document.getElementById('qualityChart').getContext('2d');
     const qualityChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Высокое качество', 'Среднее', 'Требует исправления'],
+            labels: ['Высокое', 'Среднее', 'Критическое'],
             datasets: [{
                 data: [1, 1, 2],
                 backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
@@ -211,12 +230,17 @@
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
+            maintainAspectRatio: true, /* Защита от бесконечного растягивания вниз */
+            plugins: { 
+                legend: { 
+                    position: 'bottom',
+                    labels: { boxWidth: 12, font: { size: 11 } }
+                } 
+            }
         }
     });
 
-    // 2. Функция фильтрации таблицы
+    // Функция фильтрации таблицы (Все / Ошибки)
     function filterTable(status, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -231,7 +255,7 @@
         });
     }
 
-    // 3. Продвинутый ИИ-анализ с прогресс-баром
+    // Логика работы ИИ-агента с прогресс-баром
     function startAdvancedAnalysis() {
         const btn = document.getElementById('aiBtn');
         const progCont = document.getElementById('progCont');
@@ -253,10 +277,10 @@
             
             progBar.style.width = progress + "%";
             
-            if (progress < 30) output.innerText = "> [SCANNING]: Проверка целостности связей...";
-            else if (progress < 60) output.innerText = "> [AI]: Поиск аномалий в строковых значениях...";
-            else if (progress < 90) output.innerText = "> [AI]: Генерация рекомендаций по оптимизации...";
-            else output.innerText = "> [COMPLETE]: Анализ завершен. Отчет сформирован.";
+            if (progress < 30) output.innerText = "> [SCANNING]: Проверка целостности связей датасетов...";
+            else if (progress < 60) output.innerText = "> [AI LOGIC]: Поиск аномалий в строковых значениях и NULL-полях...";
+            else if (progress < 90) output.innerText = "> [AI LOGIC]: Формирование пула рекомендаций по оптимизации...";
+            else output.innerText = "> [COMPLETE]: Анализ успешно завершен. Отчет передан на панель.";
 
             if (progress >= 100) {
                 clearInterval(interval);
