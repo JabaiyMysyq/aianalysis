@@ -187,4 +187,271 @@
 
         <div class="chart-glass-box">
             <h3 style="color:#fff; margin:0 0 20px 0; font-size:1.1rem;">Живой график качества</h3>
-            <div style="position: relative; height: 240px; display: flex; justify-content: center
+            <div style="position: relative; height: 240px; display: flex; justify-content: center;">
+                <canvas id="qualityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <section class="ai-control-panel" style="background: rgba(30, 41, 59, 0.4); padding: 30px; border-radius: 15px; margin-top: 40px; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h3 style="color:#fff;"><i class="fas fa-microchip" style="color: #1abc9c;"></i> Аналитический ИИ-Агент</h3>
+                <p id="agentStatus" style="margin: 8px 0 0 0; color: #94a3b8;">Готов к сканированию бизнес-метрик...</p>
+            </div>
+            <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding: 14px 28px; background: #1abc9c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                Запустить ИИ-аудит
+            </button>
+        </div>
+        <div class="progress-container" id="progCont" style="width: 100%; background: #1e293b; height: 8px; border-radius: 4px; margin: 20px 0; display: none;">
+            <div class="progress-bar" id="progBar" style="width: 0%; height: 100%; background: #1abc9c; border-radius: 4px; transition: width 0.2s;"></div>
+        </div>
+        <div id="aiOutput" style="margin-top: 20px; font-family: monospace; color: #1abc9c; display: none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;"></div>
+        <div class="ai-report-box" id="aiReportBox" style="background: #1e293b; border-left: 4px solid #1abc9c; padding: 20px; margin-top: 20px; border-radius: 8px; display: none; color: #ecf0f1;"></div>
+    </section>
+</main>
+
+<script>
+    let qualityChart;
+
+    // Исходные данные, если LocalStorage пуст
+    const defaultData = [
+        { system: "CRM Система", completeness: "94%", accuracy: "88%" },
+        { system: "Бухгалтерия (ERP)", completeness: "99%", accuracy: "97%" },
+        { system: "Кадровый учет (HR)", completeness: "72%", accuracy: "65%" }
+    ];
+
+    window.onload = function() {
+        Chart.defaults.color = '#94a3b8';
+        const ctx = document.getElementById('qualityChart').getContext('2d');
+        qualityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Отлично (>=95%)', 'Норма (80-94%)', 'Критично (<80%)'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        loadTableData();
+    };
+
+    function saveTableToStorage() {
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        let tableArr = [];
+        rows.forEach(row => {
+            tableArr.push({
+                system: row.cells[0].innerText,
+                completeness: row.cells[1].innerText,
+                accuracy: row.cells[2].innerText
+            });
+        });
+        localStorage.setItem('dqTableData', JSON.stringify(tableArr));
+    }
+
+    function loadTableData() {
+        let storedData = localStorage.getItem('dqTableData');
+        let dataToRender = storedData ? JSON.parse(storedData) : defaultData;
+        
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        dataToRender.forEach(item => {
+            const newTr = document.createElement('tr');
+            newTr.innerHTML = `
+                <td contenteditable="true" oninput="handleTableChange()">${item.system}</td>
+                <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${item.completeness}</td>
+                <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${item.accuracy}</td>
+                <td class="status-cell"></td>
+                <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            tbody.appendChild(newTr);
+        });
+        calculateStatuses();
+    }
+
+    function handleTableChange() {
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    function calculateStatuses() {
+        let excellentCount = 0, normalCount = 0, criticalCount = 0;
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        
+        rows.forEach(row => {
+            const accuracyCell = row.querySelector('.accuracy-cell');
+            const statusCell = row.querySelector('.status-cell');
+            let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
+
+            if (accuracyValue >= 95) {
+                statusCell.innerHTML = `<span class="badge-excellent">Отлично</span>`;
+                row.setAttribute('data-status', 'excellent');
+                excellentCount++;
+            } else if (accuracyValue >= 80 && accuracyValue < 95) {
+                statusCell.innerHTML = `<span class="badge-normal">Норма</span>`;
+                row.setAttribute('data-status', 'normal');
+                normalCount++;
+            } else {
+                statusCell.innerHTML = `<span class="badge-critical">Критично</span>`;
+                row.setAttribute('data-status', 'bad');
+                criticalCount++;
+            }
+        });
+
+        if (qualityChart) {
+            qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
+            qualityChart.update();
+        }
+    }
+
+    function addNewRow() {
+        const system = document.getElementById('newSystem').value.trim();
+        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
+
+        if (!system) {
+            alert('Введите название системы!');
+            return;
+        }
+
+        const tbody = document.getElementById('tableBody');
+        const newTr = document.createElement('tr');
+        newTr.innerHTML = `
+            <td contenteditable="true" oninput="handleTableChange()">${system}</td>
+            <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${completeness}</td>
+            <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${accuracy}</td>
+            <td class="status-cell"></td>
+            <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+        `;
+        tbody.appendChild(newTr);
+        
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+
+        document.getElementById('newSystem').value = '';
+        document.getElementById('newCompleteness').value = '';
+        document.getElementById('newAccuracy').value = '';
+    }
+
+    function deleteRow(buttonElem) {
+        buttonElem.closest('tr').remove();
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    function resetToDefaultData() {
+        if(confirm("Восстановить базовые три строки данных?")) {
+            localStorage.removeItem('dqTableData');
+            loadTableData();
+            resetAiButtonState();
+        }
+    }
+
+    function resetAiButtonState() {
+        document.getElementById('aiBtn').disabled = false;
+        document.getElementById('aiBtn').style.opacity = "1";
+        document.getElementById('agentStatus').innerText = "Данные изменены. ИИ готов к перерасчету...";
+    }
+
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('#dataTable tbody tr').forEach(row => {
+            if (status === 'all') row.style.display = '';
+            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
+        });
+    }
+
+    function startAdvancedAnalysis() {
+        const btn = document.getElementById('aiBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+        const output = document.getElementById('aiOutput');
+        const reportBox = document.getElementById('aiReportBox');
+
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        let totalRows = rows.length;
+
+        if (totalRows === 0) {
+            progCont.style.display = "none";
+            output.style.display = "none";
+            reportBox.innerHTML = "<h4><i class='fas fa-exclamation-triangle' style='color:#e74c3c;'></i> Ошибка аудита</h4><p>Операционная база данных пуста. Добавьте системы для проведения сквозного анализа качества.</p>";
+            reportBox.style.display = "block";
+            return;
+        }
+
+        btn.disabled = true; btn.style.opacity = "0.5";
+        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 20;
+            progBar.style.width = progress + "%";
+            
+            if (progress === 20) output.innerText = "> [SCANNING]: Извлечение матриц Completeness и Accuracy из репозиториев...";
+            else if (progress === 40) output.innerText = "> [AI_LOGIC]: Многофакторный анализ пересечения пропусков и логических ошибок...";
+            else if (progress === 60) output.innerText = "> [CORRELATION]: Вычисление кумулятивного индекса качества ИКТ-инфраструктуры...";
+            else if (progress === 80) output.innerText = "> [REPORT_BUILDING]: Компиляция экспертного заключения и генерация патчей...";
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                output.innerText = `> [COMPLETE]: Двухфакторный аудит завершен. Метрики синхронизированы.`;
+
+                let sumCompleteness = 0;
+                let sumAccuracy = 0;
+                
+                let worstAccSystem = "";
+                let worstAccuracy = 101;
+                
+                let worstCompSystem = "";
+                let worstCompleteness = 101;
+
+                rows.forEach(row => {
+                    const name = row.cells[0].innerText.trim() || "Неизвестная система";
+                    let compVal = parseInt(row.querySelector('.completeness-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+                    let accVal = parseInt(row.querySelector('.accuracy-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+
+                    sumCompleteness += compVal;
+                    sumAccuracy += accVal;
+
+                    if (accVal < worstAccuracy) {
+                        worstAccuracy = accVal;
+                        worstAccSystem = name;
+                    }
+
+                    if (compVal < worstCompleteness) {
+                        worstCompleteness = compVal;
+                        worstCompSystem = name;
+                    }
+                });
+
+                let avgCompleteness = (sumCompleteness / totalRows).toFixed(1);
+                let avgAccuracy = (sumAccuracy / totalRows).toFixed(1);
+
+                let riskLevel = "НИЗКИЙ (СТАБИЛЬНОСТЬ)";
+                let riskColor = "#1abc9c";
+                let anomalyReport = "Критических аномалий в архитектуре данных не обнаружено. Показатели синхронизированы в пределах нормы.";
+
+                if (worstAccuracy < 80 || worstCompleteness < 80) {
+                    riskLevel = "КРИТИЧЕСКИЙ (ТРЕБУЕТСЯ СРОЧНОЕ ВМЕШАТЕЛЬСТВО)";
+                    riskColor = "#ef4444";
+                    
+                    if (worstAccuracy < 80 && worstCompleteness < 80) {
+                        anomalyReport = `🚨 **Обнаружен системный кризис данных!**<br>
+                                         1. В системе **«${worstAccSystem}»** критически упала точность (${worstAccuracy}%).<br>
+                                         2. В системе **«${worstCompSystem}»** зафиксирована опасная потеря полноты (${worstCompleteness}% — критический объем пустых записей/NULL).`;
+                    } else if (worstAccuracy < 80) {
+                        anomalyReport = `⚠️ **Аномалия точности:** В источнике **«${worstAccSystem}»** точность
