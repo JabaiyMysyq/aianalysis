@@ -2,9 +2,93 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Анализ данных | DataQuality</title>
+    <title>Аналитическая Панель | DataQuality</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Дополнительные стили для интерактивности */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .chart-container-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ai-control-panel {
+            background: #1a252f;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #34495e;
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #1abc9c;
+            border-radius: 5px;
+            transition: width 0.1s;
+        }
+
+        .recommendation-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            display: none; /* Появляются после работы ИИ */
+        }
+
+        .rec-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #1abc9c;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: 1px solid #1abc9c;
+            background: transparent;
+            color: #1abc9c;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #1abc9c;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,68 +105,167 @@
 </header>
 
 <main>
-    <h2><i class="fas fa-database"></i> Метрики качества текущих баз данных</h2>
-    <p>В интерактивной таблице ниже приведены результаты автоматического аудита информационных систем организации.</p>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Набор данных (Dataset)</th>
-                    <th>Полнота (Completeness)</th>
-                    <th>Точность (Accuracy)</th>
-                    <th>Статус качества</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr>
-                    <td>База клиентов (CRM)</td>
-                    <td>94%</td>
-                    <td>88%</td>
-                    <td><span class="status-badge status-good">Удовлетворительно</span></td>
-                </tr>
-                <tr>
-                    <td>Финансовые отчеты (2025)</td>
-                    <td>99%</td>
-                    <td>97%</td>
-                    <td><span class="status-badge status-good">Высокий уровень</span></td>
-                </tr>
-                <tr>
-                    <td>Реестр сотрудников (HR)</td>
-                    <td>72%</td>
-                    <td>65%</td>
-                    <td><span class="status-badge status-bad">Критический уровень</span></td>
-                </tr>
-            </tbody>
-        </table>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2><i class="fas fa-tachometer-alt"></i> Интерактивный Дашборд Качества</h2>
+        <div>
+            <span style="font-size: 0.9rem; color: #666;">Фильтр: </span>
+            <button class="filter-btn active" onclick="filterTable('all', this)">Все</button>
+            <button class="filter-btn" onclick="filterTable('bad', this)">Ошибки</button>
+        </div>
     </div>
 
-    <section class="ai-agent-section" style="background: #eef2f7; padding: 25px; border-radius: 10px; margin-top: 30px;">
-        <h3><i class="fas fa-magic"></i> AI-Агент Статистики</h3>
-        <p>Запустите анализ, чтобы интеллектуальный агент обработал метрики таблицы и вывел аналитическое резюме вместе с мотивационным тезисом.</p>
-        <button onclick="runAgent()" style="padding:12px 20px; background:#2c3e50; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">
-            <i class="fas fa-cogs"></i> Обработать данные агентом
-        </button>
-        
-        <div id="agentResult" style="margin-top:20px; font-style:italic; color:#34495e; padding-left:15px; border-left:4px solid #1abc9c; display:none;">
+    <div class="dashboard-grid">
+        <div class="table-container" style="margin: 0;">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Система</th>
+                        <th>Полнота</th>
+                        <th>Точность</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-status="good">
+                        <td>CRM Система</td>
+                        <td>94%</td>
+                        <td>88%</td>
+                        <td><span class="status-badge status-good">Норма</span></td>
+                    </tr>
+                    <tr data-status="good">
+                        <td>Бухгалтерия (ERP)</td>
+                        <td>99%</td>
+                        <td>97%</td>
+                        <td><span class="status-badge status-good">Отлично</span></td>
+                    </tr>
+                    <tr data-status="bad">
+                        <td>Кадровый учет (HR)</td>
+                        <td>72%</td>
+                        <td>65%</td>
+                        <td><span class="status-badge status-bad">Критично</span></td>
+                    </tr>
+                    <tr data-status="bad">
+                        <td>Архив документов</td>
+                        <td>45%</td>
+                        <td>50%</td>
+                        <td><span class="status-badge status-bad">Ошибки</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container-box">
+            <h3>Распределение качества</h3>
+            <canvas id="qualityChart" width="300" height="300"></canvas>
+        </div>
+    </div>
+
+    <section class="ai-control-panel">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h3><i class="fas fa-microchip"></i> AI-Агент: Глубокая проверка</h3>
+                <p id="agentStatus">Готов к анализу структуры данных по 4-м метрикам...</p>
             </div>
+            <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding:15px 25px; background:#1abc9c; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">
+                <i class="fas fa-play"></i> Запустить ИИ-аудит
+            </button>
+        </div>
+
+        <div class="progress-container" id="progCont">
+            <div class="progress-bar" id="progBar"></div>
+        </div>
+
+        <div id="aiOutput" style="margin-top:20px; font-family:'Courier New', monospace; font-size:0.9rem; color:#1abc9c; display:none;">
+            [SYSTEM]: Инициализация нейронного сканирования...
+        </div>
     </section>
+
+    <div class="recommendation-cards" id="recCards">
+        <div class="rec-card">
+            <h4><i class="fas fa-broom"></i> Очистка данных</h4>
+            <p>Рекомендуется удалить 142 дубликата в базе CRM, выявленных по совпадению ИИН и номера телефона.</p>
+        </div>
+        <div class="rec-card">
+            <h4><i class="fas fa-check-double"></i> Валидация</h4>
+            <p>Внедрите маску ввода (+7-XXX-XXX-XX-XX) для предотвращения некорректных форматов в базе HR.</p>
+        </div>
+        <div class="rec-card">
+            <h4><i class="fas fa-sync"></i> Синхронизация</h4>
+            <p>Обнаружено расхождение дат в ERP и Архиве. Настройте ежедневную автоматическую сверку в 00:00.</p>
+        </div>
+    </div>
 </main>
 
 <script>
-function runAgent() {
-    const resultDiv = document.getElementById('agentResult');
-    resultDiv.style.display = "block";
-    resultDiv.innerHTML = "Агент рассчитывает показатели... <i class='fas fa-spinner fa-spin'></i>";
-    
-    setTimeout(() => {
-        resultDiv.innerHTML = `
-            <strong>Аналитическое заключение ИИ:</strong> Средний показатель полноты по исследуемым системам составляет <strong>88.3%</strong>. 
-            Наибольшие уязвимости зафиксированы в <em>Реестре сотрудников (HR)</em>, где точность упала до 65%. Требуется немедленная нормализация полей. <br><br>
-            <strong>AI-Мотивация дня:</strong> "Качественные данные — фундамент успешных государственных стратегий. Очистив базу HR сегодня, мы исключаем управленческие ошибки завтра. Вперед к чистым данным!"
-        `;
-    }, 1500);
-}
+    // 1. Инициализация графика при загрузке
+    const ctx = document.getElementById('qualityChart').getContext('2d');
+    const qualityChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Высокое качество', 'Среднее', 'Требует исправления'],
+            datasets: [{
+                data: [1, 1, 2],
+                backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // 2. Функция фильтрации таблицы
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        rows.forEach(row => {
+            if (status === 'all') {
+                row.style.display = '';
+            } else {
+                row.style.display = row.getAttribute('data-status') === status ? '' : 'none';
+            }
+        });
+    }
+
+    // 3. Продвинутый ИИ-анализ с прогресс-баром
+    function startAdvancedAnalysis() {
+        const btn = document.getElementById('aiBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+        const status = document.getElementById('agentStatus');
+        const output = document.getElementById('aiOutput');
+        const recCards = document.getElementById('recCards');
+
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        progCont.style.display = "block";
+        output.style.display = "block";
+        recCards.style.display = "none";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            
+            progBar.style.width = progress + "%";
+            
+            if (progress < 30) output.innerText = "> [SCANNING]: Проверка целостности связей...";
+            else if (progress < 60) output.innerText = "> [AI]: Поиск аномалий в строковых значениях...";
+            else if (progress < 90) output.innerText = "> [AI]: Генерация рекомендаций по оптимизации...";
+            else output.innerText = "> [COMPLETE]: Анализ завершен. Отчет сформирован.";
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                status.innerText = "Анализ завершен успешно!";
+                recCards.style.display = "grid";
+                btn.innerHTML = "<i class='fas fa-check'></i> Аудит выполнен";
+            }
+        }, 300);
+    }
 </script>
 
 <footer>
