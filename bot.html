@@ -2,32 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Помощник по качеству | DataQuality</title>
+    <title>Интеллектуальный Помощник | DataQuality</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .chat-wrapper {
-            max-width: 800px;
+            max-width: 850px;
             margin: 30px auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            height: 600px;
+            height: 650px;
         }
 
         .chat-header {
             background: #1a252f;
             color: white;
             padding: 20px;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
         }
+
+        .bot-profile { display: flex; align-items: center; gap: 15px; }
 
         .chat-header .status-dot {
             width: 10px;
@@ -36,6 +38,15 @@
             border-radius: 5px;
             display: inline-block;
             animation: pulse 1.5s infinite;
+        }
+
+        .brain-load {
+            font-size: 0.8rem;
+            background: #34495e;
+            padding: 4px 8px;
+            border-radius: 12px;
+            color: #1abc9c;
+            font-family: monospace;
         }
 
         .chat-messages {
@@ -51,17 +62,18 @@
         .message {
             max-width: 75%;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.95rem;
-            line-height: 1.4;
+            line-height: 1.5;
+            position: relative;
         }
 
         .message.bot {
             background: white;
             color: #2c3e50;
             align-self: flex-start;
-            border-left: 4px solid #1abc9c;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border-left: 5px solid #1abc9c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
 
         .message.user {
@@ -74,8 +86,8 @@
         .chat-input-area {
             padding: 15px;
             background: white;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
             border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 10px;
@@ -83,22 +95,23 @@
 
         .chat-input-area input {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: 1px solid #cbd5e1;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: inherit;
             font-size: 0.95rem;
             outline: none;
+            transition: 0.2s;
         }
 
-        .chat-input-area input:focus { border-color: #1abc9c; }
+        .chat-input-area input:focus { border-color: #1abc9c; box-shadow: 0 0 0 3px rgba(26,188,156,0.1); }
 
         .chat-input-area button {
             background: #1abc9c;
             color: white;
             border: none;
-            padding: 0 20px;
-            border-radius: 6px;
+            padding: 0 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
@@ -107,24 +120,12 @@
         .chat-input-area button:hover { background: #16a085; }
 
         .suggested-hints {
-            display: flex;
-            gap: 10px;
-            padding: 0 20px 15px 20px;
-            background: #f8fafc;
-            flex-wrap: wrap;
+            display: flex; gap: 10px; padding: 0 20px 15px 20px; background: #f8fafc; flex-wrap: wrap;
         }
 
         .hint-btn {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #e2e8f0; color: #475569; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
         }
-
         .hint-btn:hover { background: #cbd5e1; color: #1e293b; }
 
         @keyframes pulse {
@@ -150,201 +151,157 @@
 
 <main>
     <div style="text-align: center; margin-top: 20px;">
-        <h2><i class="fas fa-comments"></i> Интерактивный Собеседник ИКТ</h2>
-        <p style="color: #666;">Бот помнит контекст беседы и может проводить интерактивный опрос вашей системы</p>
+        <h2><i class="fas fa-brain"></i> Экспертная Система Data Governance v3.0</h2>
+        <p style="color: #666;">Гибридный ИИ-помощник с анализом тональности речи и обучением на лету</p>
     </div>
 
     <div class="chat-wrapper">
         <div class="chat-header">
-            <div class="status-dot"></div>
-            <div>
-                <strong>DataQuality Диалоговый Агент</strong>
-                <div style="font-size: 0.75rem; color: #bdc3c7;">Статус: В диалоге | Память активна</div>
+            <div class="bot-profile">
+                <div class="status-dot"></div>
+                <div>
+                    <strong>DataQuality Семантический Агент</strong>
+                    <div style="font-size: 0.75rem; color: #bdc3c7;">NLP Ядро активна | Контекст включен</div>
+                </div>
             </div>
+            <div class="brain-load" id="brainLoad">Память: 0 куплетов</div>
         </div>
 
         <div class="chat-messages" id="chatWindow">
             <div class="message bot">
-                Привет! Я не просто отвечаю на вопросы, я умею вести полноценную беседу. 
+                Приветствую! Я обновленная экспертная система. Я умею распознавать эмоции, запоминать контекст разговора и обучаться новым терминам прямо в ходе беседы.
                 <br><br>
-                Давай проверим качество данных в твоей организации? Как называется информационная система, которую ты используешь чаще всего? (Например: CRM, ERP или База ЖКХ)
+                Если вы хотите проверить свою базу данных, напишите <b>"начать аудит"</b>. Или просто задайте любой профессиональный вопрос!
             </div>
         </div>
 
         <div class="suggested-hints" id="hintsContainer">
-            <button class="hint-btn" onclick="useHint('CRM Система')">CRM Система</button>
-            <button class="hint-btn" onclick="useHint('Бухгалтерия ERP')">Бухгалтерия ERP</button>
-            <button class="hint-btn" onclick="useHint('Я не знаю')">Я просто хочу поболтать</button>
+            <button class="hint-btn" onclick="useHint('Начать аудит данных')">📊 Начать аудит</button>
+            <button class="hint-btn" onclick="useHint('У нас все плохо с базами, куча ошибок!')">⚠️ Проверить негативный контекст</button>
+            <button class="hint-btn" onclick="useHint('Что такое Data Governance?')">💡 Что такое Data Governance?</button>
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Напишите ответ боту..." onkeypress="handleKeyPress(event)">
+            <input type="text" id="userInput" placeholder="Напишите мне что-нибудь (например: у нас много дубликатов в системе)..." onkeypress="handleKeyPress(event)">
             <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 </main>
 
 <script>
-    // ГЛОБАЛЬНЫЙ КОНТЕКСТ ДИАЛОГА (Память бота)
-    let dialogState = 'ASK_SYSTEM_NAME'; // Текущая стадия разговора
-    let userData = {
-        systemName: '',
-        completeness: 0,
-        accuracy: 0
+    // СОСТОЯНИЯ ДИАЛОГА
+    let currentState = 'IDLE'; 
+    let auditData = { system: '', completeness: 0, accuracy: 0 };
+    
+    // БАЗА ЗНАНИЙ С ВЕСАМИ КЛЮЧЕВЫХ СЛОВ (NLP структура)
+    let knowledgeBase = {
+        'governance': '<b>Data Governance (Управление данными)</b> — это комплексная дисциплина, включающая людей, процессы и ИТ-технологии, направленная на создание однозначного и структурированного контроля над корпоративными данными.',
+        'полнот': '<b>Полнота (Completeness)</b> измеряет долю заполненных обязательных реквизитов (например, ИИН, email). Пропуски (NULL-значения) возникают из-за плохой эргономики интерфейсов.',
+        'точност': '<b>Точность (Accuracy)</b> отражает уровень соответствия данных реальному положению дел. База может быть полной, но содержать устаревшие или сфабрикованные записи.',
+        'дубликат': 'Для борьбы с <b>дубликатами</b> ИИ-агент рекомендует использовать алгоритмы нечеткого поиска (например, Расстояние Левенштейна), сопоставляющие похожие имена или некорректные ИИН.',
+        'метрики': 'Основные метрики качества данных в ИКТ: Полнота (Completeness), Точность (Accuracy), Своевременность (Timeliness) и Непротиворечивость (Consistency).'
     };
 
-    // Функция отправки
+    // ПЕРЕМЕННАЯ ДЛЯ ОБУЧЕНИЯ (Специфический стейт)
+    let lastUnknownKeyword = '';
+
+    // Обновление счетчика выученных терминов в шапке
+    function updateBrainLoad() {
+        const customKeys = Object.keys(knowledgeBase).length - 5; 
+        document.getElementById('brainLoad').innerText = `Выучено терминов: +${customKeys}`;
+    }
+
     function sendMessage() {
-        const inputField = document.getElementById('userInput');
-        const userText = inputField.value.trim();
-        
-        if (userText === '') return;
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text) return;
 
-        appendMessage(userText, 'user');
-        inputField.value = '';
+        appendMessage(text, 'user');
+        input.value = '';
 
-        // Небольшая задержка для естественности
         setTimeout(() => {
-            const botResponse = processDialogLogic(userText);
-            appendMessage(botResponse, 'bot');
+            const response = coreEngine(text);
+            appendMessage(response, 'bot');
+            updateBrainLoad();
         }, 500);
     }
 
-    // ДИАЛОГОВАЯ МАТРИЦА (Менеджер состояний)
-    function processDialogLogic(text) {
-        const lowerText = text.toLowerCase();
-
-        // Сброс диалога в любой момент
-        if (lowerText.includes('сброс') || lowerText.includes('заново') || lowerText.includes('привет')) {
-            dialogState = 'ASK_SYSTEM_NAME';
-            updateHints(['CRM Система', 'Бухгалтерия ERP', 'Просто поболтать']);
-            return 'Хорошо, давай начнем сначала! Как называется твоя основная информационная система?';
-        }
-
-        // Ветка обычного общения (если пользователь отказался тестировать систему)
-        if (lowerText.includes('болтать') || lowerText.includes('знаю') || dialogState === 'JUST_CHATTING') {
-            dialogState = 'JUST_CHATTING';
-            updateHints(['Давай проверим систему', 'Что ты умеешь?', 'Сброс']);
-            return handleCasualChat(lowerText);
-        }
-
-        // СЦЕНАРИЙ ОПРОСА КАЧЕСТВА ДАННЫХ (Удержание контекста)
-        switch (dialogState) {
-            
-            case 'ASK_SYSTEM_NAME':
-                userData.systemName = text;
-                dialogState = 'ASK_COMPLETENESS';
-                updateHints(['90%', '50%', '100%']);
-                return `Принято! Работаем с системой <b>«${userData.systemName}»</b>. <br>Скажи, какой примерно процент <b>полноты (Completeness)</b> в этой базе? Все ли обязательные поля заполнены?`;
-
-            case 'ASK_COMPLETENESS':
-                let compNum = parseInt(lowerText.replace(/[^0-9]/g, '')) || 80;
-                userData.completeness = compNum;
-                dialogState = 'ASK_ACCURACY';
-                updateHints(['95%', '70%', '40%']);
-                
-                let comment = compNum < 75 ? 'Хм, маловато. Значит, есть много пустых пропусков.' : 'Отличный показатель заполнения!';
-                return `${comment} А теперь оцени <b>точность (Accuracy)</b> в «${userData.systemName}». Сколько процентов информации там действительно верны и актуальны?`;
-
-            case 'ASK_ACCURACY':
-                let accNum = parseInt(lowerText.replace(/[^0-9]/g, '')) || 80;
-                userData.accuracy = accNum;
-                dialogState = 'SHOW_DIAGNOSIS';
-                updateHints(['Спасибо за аудит!', 'Давай заново', 'Перейти на дашборд']);
-                
-                // Выдаем вердикт на основе собранных на прошлых шагах данных
-                return calculateFinalVerdict();
-
-            case 'SHOW_DIAGNOSIS':
-                if (lowerText.includes('дашборд')) {
-                    window.location.href = 'dashboard.html';
-                    return 'Перенаправляю...';
-                }
-                dialogState = 'JUST_CHATTING';
-                updateHints(['Проверить другую базу', 'Расскажи анекдот']);
-                return 'Рад был провести аудит! Можем просто поболтать или проверить другую систему (напиши "сброс").';
-
-            default:
-                return 'Что-то пошло не так. Давай начнем с начала. Как называется твоя система?';
-        }
-    }
-
-    // Логика казуального общения (Диалог на свободные темы)
-    function handleCasualChat(lowerText) {
-        if (lowerText.includes('как дела') || lowerText.includes('как ты')) {
-            return 'Мои виртуальные шестеренки крутятся на полную мощность! Анализирую таблицы. А у тебя как дела с учебой и проектами?';
-        }
-        if (lowerText.includes('нормально') || lowerText.includes('хорошо') || lowerText.includes('отлично')) {
-            return 'Супер! Рад слышать. Кстати, если хочешь удивить комиссию на защите ИКТ проекта, напиши мне фразу "Давай проверим систему", и мы сымитируем живой аудит данных.';
-        }
-        if (lowerText.includes('умеешь') || lowerText.includes('функции')) {
-            return 'Я умею запоминать твои ответы, рассчитывать качество систем, выявлять уязвимости и отвечать на вопросы по Data Governance. Можешь протестировать меня!';
-        }
-        if (lowerText.includes('анекдот') || lowerText.includes('шутк')) {
-            return 'Шутка для ИТ-специалистов: "Приходит разработчик к аналитику данных и говорит: Наша база полностью заполнена! Аналитик отвечает: Отлично, а данные точные? Разработчик: Ну... точность 100%, все строки состоят из слова Тест". 😄';
-        }
-        if (lowerText.includes('проверим систему') || lowerText.includes('проверить систему')) {
-            dialogState = 'ASK_SYSTEM_NAME';
-            updateHints(['CRM', 'ERP']);
-            return 'Отлично, возвращаемся к делу! Как называется твоя информационная система?';
-        }
-        return 'Интересная мысль! Я зафиксировал твой ответ. В рамках управления данными (Data Governance) это подчеркивает важность человеческого фактора. Хочешь провести аудит системы или расскажешь что-нибудь еще?';
-    }
-
-    // Формирование аналитического вывода по результатам диалога
-    function calculateFinalVerdict() {
-        let title = `<b>📊 Итог диалогового аудита системы «${userData.systemName}»:</b><br><br>`;
-        let metrics = `Полнота: ${userData.completeness}%, Точность: ${userData.accuracy}%.<br>`;
+    // СЕРДЦЕ ИИ: СЕМАНТИЧЕСКОЕ ЯДРО И ОБРАБОТКА КОНТЕНТА
+    function coreEngine(rawText) {
+        const cleanText = rawText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
         
-        if (userData.accuracy < 80 && userData.completeness < 80) {
-            return title + metrics + `⚠️ <b>Критический уровень!</b> Твоя система «${userData.systemName}» находится в зоне риска. Данных мало, и они содержат ошибки. Рекомендуется срочная очистка и валидация через скрипты!`;
-        } else if (userData.accuracy < 80) {
-            return title + metrics + `⚠️ <b>Проблема с достоверностью.</b> Поля заполнены (Полнота: ${userData.completeness}%), но данные неточные. Пользователи вводят фейковую информацию. Срочно нужны маски ввода!`;
-        } else {
-            return title + metrics + `✅ <b>Стабильный уровень!</b> Данные системы в хорошем состоянии. Продолжайте мониторинг на нашей аналитической панели.`;
+        // 1. ПРОВЕРКА НАХОЖДЕНИЯ В РЕЖИМЕ ОБУЧЕНИЯ БОТА
+        if (currentState === 'LEARNING_PROCESS') {
+            knowledgeBase[lastUnknownKeyword] = `<b>${lastUnknownKeyword.toUpperCase()} (Вы обучили бота):</b> ${rawText}`;
+            currentState = 'IDLE';
+            updateHints(['Начать аудит данных', 'Что такое Data Governance?']);
+            return `Отлично! Я занес термин "<b>${lastUnknownKeyword}</b>" в свою базу знаний и связал его с вашим определением. Можете проверить меня, спросив про этот термин!`;
         }
+
+        // 2. ПРОВЕРКА НАХОЖДЕНИЯ В РЕЖИМЕ АУДИТА (State Machine)
+        if (currentState.startsWith('AUDIT_')) {
+            return handleAuditStateMachine(cleanText, rawText);
+        }
+
+        // Включение аудита по триггерам
+        if (cleanText.includes('аудит') || cleanText.includes('проверить систему') || cleanText.includes('начать')) {
+            currentState = 'AUDIT_SYS';
+            updateHints(['CRM Система', 'Гос. база данных', 'ERP']);
+            return 'Запущен интерактивный сессионный аудит. Как называется целевая информационная система?';
+        }
+
+        // 3. АНАЛИЗ ТОНАЛЬНОСТИ РЕЧИ (Sentiment Analysis)
+        if (cleanText.includes('плохо') || cleanText.includes('ужас') || cleanText.includes('ошибк') || cleanText.includes('мусор')) {
+            updateHints(['Начать аудит для исправления ошибок', 'Как убрать дубликаты?']);
+            return '⚠️ <b>Обнаружен негативный контекст качества данных!</b> Я чувствую, что ваши базы данных замусорены. Низкое качество данных ведет к финансовым потерям. Давайте проведем экспресс-аудит? Напишите "аудит".';
+        }
+
+        // 4. СЕМАНТИЧЕСКИЙ ПОИСК ПО БАЗЕ ЗНАНИЙ (Стемминг/Корни слов)
+        for (let key in knowledgeBase) {
+            if (cleanText.includes(key)) {
+                return knowledgeBase[key];
+            }
+        }
+
+        // Казуальные фразы
+        if (cleanText.includes('привет') || cleanText.includes('салем')) return 'Здравствуйте! Я на связи. Готов обсудить архитектуру данных.';
+        if (cleanText.includes('как дела')) return 'Моя нейросетевая модель стабильна, логов ошибок в памяти не обнаружено. Как продвигается защита вашего проекта по ИКТ?';
+
+        // 5. РЕЖИМ САМООБУЧЕНИЯ (Если бот зашел в тупик)
+        currentState = 'LEARNING_PROCESS';
+        // Выделяем первое слово как ключевое для обучения
+        const words = cleanText.split(' ');
+        lastUnknownKeyword = words[0].length > 3 ? words[0] : 'качество';
+        
+        updateHints(['Это дисциплина контроля данных', 'Это важная ИКТ метрика']);
+        return `🤖 Хм... Мой семантический анализатор не нашел совпадений для корня "${lastUnknownKeyword}". 
+        <br><br>
+        Я хочу стать умнее. <b>Обучите меня!</b> Напишите в следующем сообщении, что означает ваше выражение/термин, и я его запомню!`;
     }
 
-    // Динамическое обновление кнопок-подсказок в зависимости от шага диалога
-    function updateHints(hintsArray) {
-        const container = document.getElementById('hintsContainer');
-        container.innerHTML = '';
-        hintsArray.forEach(hint => {
-            const btn = document.createElement('button');
-            btn.classList.add('hint-btn');
-            btn.innerText = hint;
-            btn.onclick = () => useHint(hint);
-            container.appendChild(btn);
-        });
-    }
-
-    // Вспомогательные функции
-    function appendMessage(text, sender) {
-        const chatWindow = document.getElementById('chatWindow');
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', sender);
-        messageDiv.innerHTML = text;
-        chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    function useHint(hintText) {
-        document.getElementById('userInput').value = hintText;
-        sendMessage();
-    }
-
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') sendMessage();
-    }
-</script>
-
-<footer>
-    <div class="footer-content">
-        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
-        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
-        <p>© 2026</p>
-    </div>
-</footer>
-
-</body>
-</html>
+    // УПРАВЛЕНИЕ СЦЕНАРИЕМ АУДИТА
+    function handleAuditStateMachine(cleanText, originalText) {
+        switch(currentState) {
+            case 'AUDIT_SYS':
+                auditData.system = originalText;
+                currentState = 'AUDIT_COMP';
+                updateHints(['95%', '60%', '85%']);
+                return `Зафиксировано. Система: <b>${auditData.system}</b>. <br>Укажите процент <b>Полноты (Completeness)</b> данных в ней:`;
+            
+            case 'AUDIT_COMP':
+                auditData.completeness = parseInt(cleanText.replace(/[^0-9]/g, '')) || 100;
+                currentState = 'AUDIT_ACC';
+                updateHints(['98%', '45%', '75%']);
+                return `Полнота принята (${auditData.completeness}%). Каков уровень <b>Точности (Accuracy)</b> информации внутри этой системы?`;
+            
+            case 'AUDIT_ACC':
+                auditData.accuracy = parseInt(cleanText.replace(/[^0-9]/g, '')) || 100;
+                currentState = 'IDLE';
+                updateHints(['Начать аудит данных', 'Что такое дубликаты?']);
+                
+                // Расчет вердикта
+                let status = auditData.accuracy >= 95 ? '<span style="color:#1abc9c">ОТЛИЧНО</span>' : (auditData.accuracy >= 80 ? '<span style="color:#f1c40f">НОРМА</span>' : '<span style="color:#e74c3c">КРИТИЧНО</span>');
+                return `<b>📊 Математический вердикт ИИ-агента для «${auditData.system}»:</b><br>
+                Интегральный индекс качества: <b>${((auditData.completeness + auditData.accuracy)/2).toFixed(0)}%</b>.<br>
+                Статус безопасности: <b>${status}</b>.<br><br>
+                <i>Рекомендация:</i> ${auditData.accuracy < 80 ? 'Требуется немедленное внедрение регулярных масок валидации типов полей.' : 'Инфраструктура стаби
