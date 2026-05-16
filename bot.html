@@ -6,17 +6,132 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        #chat-box { 
-            border: 1px solid #e2e8f0; padding: 20px; height: 350px; margin-bottom: 15px; 
-            background: #fff; overflow-y: auto; border-radius: 10px;
-            display: flex; flex-direction: column; gap: 12px;
+        .chat-wrapper {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
         }
-        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; }
-        .user-msg { background: #1abc9c; color: white; align-self: flex-end; }
-        .bot-msg { background: #2c3e50; color: white; align-self: flex-start; }
-        .chat-input-area { display: flex; gap: 10px; }
-        #userInput { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; }
-        #sendBtn { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        .chat-header {
+            background: #1a252f;
+            color: white;
+            padding: 20px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #1abc9c;
+            border-radius: 5px;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .message.bot {
+            background: white;
+            color: #2c3e50;
+            align-self: flex-start;
+            border-left: 4px solid #1abc9c;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .message.user {
+            background: #1abc9c;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: white;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .chat-input-area input:focus { border-color: #1abc9c; }
+
+        .chat-input-area button {
+            background: #1abc9c;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .chat-input-area button:hover { background: #16a085; }
+
+        .suggested-hints {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 15px 20px;
+            background: #f8fafc;
+            flex-wrap: wrap;
+        }
+
+        .hint-btn {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .hint-btn:hover { background: #cbd5e1; color: #1e293b; }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
     </style>
 </head>
 <body>
@@ -34,64 +149,193 @@
 </header>
 
 <main>
-    <h2><i class="fas fa-robot"></i> Чат-бот Data Quality AI</h2>
-    <p>Задайте боту вопрос об очистке данных, метриках или методах улучшения качества (например: "Как улучшить данные?" или "Что такое валидация?").</p>
-    
-    <div id="chat-box">
-        <div class="msg bot-msg">Здравствуйте! Я ваш ИИ-консультант по Data Quality. Готов подсказать лучшие практики очистки баз данных и оптимизации информационных систем.</div>
+    <div style="text-align: center; margin-top: 20px;">
+        <h2><i class="fas fa-comments"></i> Интерактивный Собеседник ИКТ</h2>
+        <p style="color: #666;">Бот помнит контекст беседы и может проводить интерактивный опрос вашей системы</p>
     </div>
 
-    <div class="chat-input-area">
-        <input type="text" id="userInput" placeholder="Введите ваш запрос сюда...">
-        <button id="sendBtn" onclick="askBot()">Отправить</button>
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <div class="status-dot"></div>
+            <div>
+                <strong>DataQuality Диалоговый Агент</strong>
+                <div style="font-size: 0.75rem; color: #bdc3c7;">Статус: В диалоге | Память активна</div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatWindow">
+            <div class="message bot">
+                Привет! Я не просто отвечаю на вопросы, я умею вести полноценную беседу. 
+                <br><br>
+                Давай проверим качество данных в твоей организации? Как называется информационная система, которую ты используешь чаще всего? (Например: CRM, ERP или База ЖКХ)
+            </div>
+        </div>
+
+        <div class="suggested-hints" id="hintsContainer">
+            <button class="hint-btn" onclick="useHint('CRM Система')">CRM Система</button>
+            <button class="hint-btn" onclick="useHint('Бухгалтерия ERP')">Бухгалтерия ERP</button>
+            <button class="hint-btn" onclick="useHint('Я не знаю')">Я просто хочу поболтать</button>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Напишите ответ боту..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
 </main>
 
 <script>
-async function askBot() {
-    const inputField = document.getElementById('userInput');
-    let userInput = inputField.value.trim();
-    const chatBox = document.getElementById('chat-box');
+    // ГЛОБАЛЬНЫЙ КОНТЕКСТ ДИАЛОГА (Память бота)
+    let dialogState = 'ASK_SYSTEM_NAME'; // Текущая стадия разговора
+    let userData = {
+        systemName: '',
+        completeness: 0,
+        accuracy: 0
+    };
 
-    if (!userInput) return;
-
-    chatBox.innerHTML += `<div class="msg user-msg">${userInput}</div>`;
-    inputField.value = "";
-
-    const loadId = "load-" + Date.now();
-    chatBox.innerHTML += `<div class="msg bot-msg" id="${loadId}"><i class="fas fa-spinner fa-spin"></i> Экспертный анализ...</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    let query = userInput.toLowerCase();
-    
-    setTimeout(async () => {
-        const botMessageElem = document.getElementById(loadId);
+    // Функция отправки
+    function sendMessage() {
+        const inputField = document.getElementById('userInput');
+        const userText = inputField.value.trim();
         
-        if(query.includes("улучшить") || query.includes("рекомендац") || query.includes("как")) {
-            botMessageElem.innerHTML = "<strong>Рекомендация эксперта:</strong> Для улучшения качества данных внедрите: 1. Валидацию на этапе ввода (ограничение масок полей); 2. Регулярную дедупликацию (склеивание повторов); 3. Автоматическую проверку пустых значений (NULL-значений).";
-        } else if (query.includes("валидация") || query.includes("проверк")) {
-            botMessageElem.innerHTML = "<strong>Определение:</strong> Валидация данных — это проверка информации на соответствие заданным критериям и правилам (например, проверка ИИН строго на 12 цифровых символов) перед сохранением в систему.";
-        } else {
-            // Обращение к русскому сегменту Wikipedia API для универсальности
-            try {
-                const res = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
-                const data = await res.json();
-                if(data.query.search.length > 0) {
-                    botMessageElem.innerHTML = `<strong>Найденный термин:</strong> ${data.query.search[0].snippet}... Для более детальной дорожной карты обратитесь к администратору данных.`;
-                } else {
-                    botMessageElem.innerHTML = "Извините, по данному аспекту архитектуры данных у меня нет готового паттерна. Попробуйте перефразировать вопрос.";
-                }
-            } catch(e) {
-                botMessageElem.innerHTML = "Сбой канала связи с глобальным архивом знаний.";
-            }
-        }
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1000);
-}
+        if (userText === '') return;
 
-document.getElementById('userInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') askBot();
-});
+        appendMessage(userText, 'user');
+        inputField.value = '';
+
+        // Небольшая задержка для естественности
+        setTimeout(() => {
+            const botResponse = processDialogLogic(userText);
+            appendMessage(botResponse, 'bot');
+        }, 500);
+    }
+
+    // ДИАЛОГОВАЯ МАТРИЦА (Менеджер состояний)
+    function processDialogLogic(text) {
+        const lowerText = text.toLowerCase();
+
+        // Сброс диалога в любой момент
+        if (lowerText.includes('сброс') || lowerText.includes('заново') || lowerText.includes('привет')) {
+            dialogState = 'ASK_SYSTEM_NAME';
+            updateHints(['CRM Система', 'Бухгалтерия ERP', 'Просто поболтать']);
+            return 'Хорошо, давай начнем сначала! Как называется твоя основная информационная система?';
+        }
+
+        // Ветка обычного общения (если пользователь отказался тестировать систему)
+        if (lowerText.includes('болтать') || lowerText.includes('знаю') || dialogState === 'JUST_CHATTING') {
+            dialogState = 'JUST_CHATTING';
+            updateHints(['Давай проверим систему', 'Что ты умеешь?', 'Сброс']);
+            return handleCasualChat(lowerText);
+        }
+
+        // СЦЕНАРИЙ ОПРОСА КАЧЕСТВА ДАННЫХ (Удержание контекста)
+        switch (dialogState) {
+            
+            case 'ASK_SYSTEM_NAME':
+                userData.systemName = text;
+                dialogState = 'ASK_COMPLETENESS';
+                updateHints(['90%', '50%', '100%']);
+                return `Принято! Работаем с системой <b>«${userData.systemName}»</b>. <br>Скажи, какой примерно процент <b>полноты (Completeness)</b> в этой базе? Все ли обязательные поля заполнены?`;
+
+            case 'ASK_COMPLETENESS':
+                let compNum = parseInt(lowerText.replace(/[^0-9]/g, '')) || 80;
+                userData.completeness = compNum;
+                dialogState = 'ASK_ACCURACY';
+                updateHints(['95%', '70%', '40%']);
+                
+                let comment = compNum < 75 ? 'Хм, маловато. Значит, есть много пустых пропусков.' : 'Отличный показатель заполнения!';
+                return `${comment} А теперь оцени <b>точность (Accuracy)</b> в «${userData.systemName}». Сколько процентов информации там действительно верны и актуальны?`;
+
+            case 'ASK_ACCURACY':
+                let accNum = parseInt(lowerText.replace(/[^0-9]/g, '')) || 80;
+                userData.accuracy = accNum;
+                dialogState = 'SHOW_DIAGNOSIS';
+                updateHints(['Спасибо за аудит!', 'Давай заново', 'Перейти на дашборд']);
+                
+                // Выдаем вердикт на основе собранных на прошлых шагах данных
+                return calculateFinalVerdict();
+
+            case 'SHOW_DIAGNOSIS':
+                if (lowerText.includes('дашборд')) {
+                    window.location.href = 'dashboard.html';
+                    return 'Перенаправляю...';
+                }
+                dialogState = 'JUST_CHATTING';
+                updateHints(['Проверить другую базу', 'Расскажи анекдот']);
+                return 'Рад был провести аудит! Можем просто поболтать или проверить другую систему (напиши "сброс").';
+
+            default:
+                return 'Что-то пошло не так. Давай начнем с начала. Как называется твоя система?';
+        }
+    }
+
+    // Логика казуального общения (Диалог на свободные темы)
+    function handleCasualChat(lowerText) {
+        if (lowerText.includes('как дела') || lowerText.includes('как ты')) {
+            return 'Мои виртуальные шестеренки крутятся на полную мощность! Анализирую таблицы. А у тебя как дела с учебой и проектами?';
+        }
+        if (lowerText.includes('нормально') || lowerText.includes('хорошо') || lowerText.includes('отлично')) {
+            return 'Супер! Рад слышать. Кстати, если хочешь удивить комиссию на защите ИКТ проекта, напиши мне фразу "Давай проверим систему", и мы сымитируем живой аудит данных.';
+        }
+        if (lowerText.includes('умеешь') || lowerText.includes('функции')) {
+            return 'Я умею запоминать твои ответы, рассчитывать качество систем, выявлять уязвимости и отвечать на вопросы по Data Governance. Можешь протестировать меня!';
+        }
+        if (lowerText.includes('анекдот') || lowerText.includes('шутк')) {
+            return 'Шутка для ИТ-специалистов: "Приходит разработчик к аналитику данных и говорит: Наша база полностью заполнена! Аналитик отвечает: Отлично, а данные точные? Разработчик: Ну... точность 100%, все строки состоят из слова Тест". 😄';
+        }
+        if (lowerText.includes('проверим систему') || lowerText.includes('проверить систему')) {
+            dialogState = 'ASK_SYSTEM_NAME';
+            updateHints(['CRM', 'ERP']);
+            return 'Отлично, возвращаемся к делу! Как называется твоя информационная система?';
+        }
+        return 'Интересная мысль! Я зафиксировал твой ответ. В рамках управления данными (Data Governance) это подчеркивает важность человеческого фактора. Хочешь провести аудит системы или расскажешь что-нибудь еще?';
+    }
+
+    // Формирование аналитического вывода по результатам диалога
+    function calculateFinalVerdict() {
+        let title = `<b>📊 Итог диалогового аудита системы «${userData.systemName}»:</b><br><br>`;
+        let metrics = `Полнота: ${userData.completeness}%, Точность: ${userData.accuracy}%.<br>`;
+        
+        if (userData.accuracy < 80 && userData.completeness < 80) {
+            return title + metrics + `⚠️ <b>Критический уровень!</b> Твоя система «${userData.systemName}» находится в зоне риска. Данных мало, и они содержат ошибки. Рекомендуется срочная очистка и валидация через скрипты!`;
+        } else if (userData.accuracy < 80) {
+            return title + metrics + `⚠️ <b>Проблема с достоверностью.</b> Поля заполнены (Полнота: ${userData.completeness}%), но данные неточные. Пользователи вводят фейковую информацию. Срочно нужны маски ввода!`;
+        } else {
+            return title + metrics + `✅ <b>Стабильный уровень!</b> Данные системы в хорошем состоянии. Продолжайте мониторинг на нашей аналитической панели.`;
+        }
+    }
+
+    // Динамическое обновление кнопок-подсказок в зависимости от шага диалога
+    function updateHints(hintsArray) {
+        const container = document.getElementById('hintsContainer');
+        container.innerHTML = '';
+        hintsArray.forEach(hint => {
+            const btn = document.createElement('button');
+            btn.classList.add('hint-btn');
+            btn.innerText = hint;
+            btn.onclick = () => useHint(hint);
+            container.appendChild(btn);
+        });
+    }
+
+    // Вспомогательные функции
+    function appendMessage(text, sender) {
+        const chatWindow = document.getElementById('chatWindow');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        messageDiv.innerHTML = text;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function useHint(hintText) {
+        document.getElementById('userInput').value = hintText;
+        sendMessage();
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') sendMessage();
+    }
 </script>
 
 <footer>
@@ -99,7 +343,6 @@ document.getElementById('userInput').addEventListener('keypress', function (e) {
         <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
         <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
         <p>© 2026</p>
-        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
     </div>
 </footer>
 
