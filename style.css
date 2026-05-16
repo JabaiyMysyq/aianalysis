@@ -1,210 +1,343 @@
-/* Base Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* ==========================================
+   ОБЩИЕ НАСТРОЙКИ И ФУТУРИСТИЧНЫЙ ФОН
+   ========================================== */
+* {
     margin: 0;
-    line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    color: #333;
-    background-color: #fcfdfd;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+body {
+    background: #0f172a; /* Глубокий темно-синий */
+    /* Мягкие светящиеся ИИ-градиенты на заднем фоне */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(26, 188, 156, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    padding: 40px 20px;
+}
+
+/* ==========================================
+   НАВИГАЦИЯ (GLASSMORPHISM НАВБАР)
+   ========================================== */
 header {
-    background: #1a252f;
-    color: white;
-    padding: 1rem 0;
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
     max-width: 1200px;
-    margin: auto;
-}
-
-.logo { font-size: 1.5rem; font-weight: bold; color: #1abc9c; }
-
-nav a {
-    color: white;
-    text-decoration: none;
-    padding: 5px 15px;
-    transition: color 0.3s;
-}
-
-nav a:hover { color: #1abc9c; }
-
-.active {
-    border-bottom: 2px solid #1abc9c;
-    font-weight: bold;
-}
-
-main {
-    flex: 1;
-    padding: 40px 20px;
-    max-width: 1100px;
-    margin: auto;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Hero Section */
-.hero {
-    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
-    color: white;
-    padding: 60px 20px;
-    border-radius: 15px;
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-/* Footer Styles */
-footer {
-    background: #1a252f;
-    color: #bdc3c7;
-    padding: 25px 20px;
-    text-align: center;
-    margin-top: 50px;
-    font-size: 0.9rem;
-    border-top: 3px solid #1abc9c;
-}
-
-.footer-content p { margin: 6px 0; }
-
-#backToTop {
-    background: #1abc9c;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s;
-    margin-top: 10px;
-}
-
-#backToTop:hover { background: #16a085; }
-
-/* Media, Audio & Video UI */
-.media-container {
+    margin: 0 auto;
+    padding: 15px 20px;
     display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 30px 0;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.media-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    padding: 20px;
-    border-radius: 12px;
-    width: 45%;
-    min-width: 300px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+.logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1abc9c;
+    text-shadow: 0 0 10px rgba(26, 188, 156, 0.3);
 }
 
-.audio-controls {
-    background: #f1f5f9;
-    padding: 15px;
+.menu {
+    display: flex;
+    gap: 15px;
+}
+
+.menu a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 16px;
     border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.menu a:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.menu a.active {
+    color: #fff;
+    background: #1abc9c;
+    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3);
+}
+
+/* ==========================================
+   ГЛАВНЫЙ БАННЕР (HERO SECTION)
+   ========================================== */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(30, 41, 59, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+}
+
+.hero h1 {
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    color: #94a3b8;
+}
+
+/* ==========================================
+   КОНТЕНТНЫЕ БЛОКИ И КАРТОЧКИ (МАТОВОЕ СТЕКЛО)
+   ========================================== */
+.analytics-intro, .media-section {
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+}
+
+h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h2 i {
+    color: #1abc9c;
+}
+
+p {
+    line-height: 1.6;
+    color: #cbd5e1;
+}
+
+/* Контейнер для медиа и блоков */
+.media-container, .grid-container {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* Стиль карточки премиум-уровня */
+.media-card, .card, .chat-container, .chat-wrapper {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.media-card:hover, .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(26, 188, 156, 0.3);
+    box-shadow: 0 10px 25px rgba(26, 188, 156, 0.05);
+}
+
+.media-card h3, .card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+/* ==========================================
+   ИНТЕРФЕЙС АУДИО И ЭЛЕМЕНТОВ УПРАВЛЕНИЯ
+   ========================================== */
+.audio-controls {
+    background: rgba(15, 23, 42, 0.6);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     margin-top: 15px;
 }
 
-/* Tables & Dashboards */
-.table-container {
-    overflow-x: auto;
-    margin: 30px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border-radius: 8px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    text-align: left;
-}
-
-th, td { padding: 14px 20px; border-bottom: 1px solid #e2e8f0; }
-th { background: #2c3e50; color: white; }
-tr:hover { background: #f8fafc; }
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-.status-good { background: #d1fae5; color: #065f46; }
-.status-bad { background: #fee2e2; color: #991b1b; }
-
-/* Creators Layout */
-.creators-container {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-    margin-top: 30px;
-}
-
-.creator-card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    padding: 30px;
-    width: 320px;
-    text-align: center;
-    transition: transform 0.3s;
-    border-top: 5px solid #1abc9c;
-}
-
-.creator-card:hover { transform: translateY(-5px); }
-
-.profile-img {
-    font-size: 45px;
-    background: #f1f5f9;
-    width: 90px;
-    height: 90px;
-    line-height: 90px;
-    border-radius: 50%;
-    margin: 0 auto 25px;
-}
-
-.card-links {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 25px;
-}
-
-.card-links a, .btn-copy-email {
-    text-decoration: none;
-    color: #2c3e50;
-    font-size: 0.9rem;
-    padding: 8px 14px;
-    background: #fff;
-    border: 1px solid #cbd5e1;
+.audio-controls button {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
     border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    font-family: inherit;
+    font-weight: 600;
     transition: all 0.2s ease;
 }
 
-.card-links a:hover, .btn-copy-email:hover {
+.audio-controls button:hover {
     background: #1abc9c;
-    color: white;
+    color: #fff;
+    border-color: #1abc9c;
+    box-shadow: 0 0 10px rgba(26, 188, 156, 0.2);
+}
+
+/* ==========================================
+   ИНТЕРФЕЙС ЧАТА (СТАБИЛЬНЫЙ И КРАСИВЫЙ)
+   ========================================== */
+.chat-container, .chat-wrapper {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0; /* Сбрасываем внутренние отступы для структуры чата */
+    overflow: hidden;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-window, .chat-messages {
+    flex: 1;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.4);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 75%;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.message.bot {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    align-self: flex-start;
+    border-left: 4px solid #1abc9c;
+    border-bottom-left-radius: 2px;
+}
+
+.message.user {
+    background: #1abc9c;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
+}
+
+.input-area, .chat-input-area {
+    display: flex;
+    padding: 15px;
+    background: rgba(30, 41, 59, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.input-area input, .chat-input-area input {
+    flex: 1;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-area input:focus, .chat-input-area input:focus {
     border-color: #1abc9c;
 }
 
-.btn-copy-email.copied {
-    background-color: #2ecc71 !important;
-    color: white !important;
-    border-color: #2ecc71 !important;
+.input-area button, .chat-input-area button {
+    padding: 12px 24px;
+    background: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.input-area button:hover, .chat-input-area button:hover {
+    background: #16a085;
+    box-shadow: 0 0 12px rgba(26, 188, 156, 0.3);
+}
+
+.hints, .suggested-hints {
+    padding: 10px 20px;
+    background: rgba(15, 23, 42, 0.2);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hint-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.hint-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================
+   ПОДВАЛ (FOOTER)
+   ========================================== */
+footer {
+    background: rgba(15, 23, 42, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 25px 20px;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.footer-content strong {
+    color: #94a3b8;
+}
+
+#backToTop {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+#backToTop:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
 }
