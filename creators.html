@@ -2,104 +2,87 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторы | DataQuality</title>
+    <title>DataQuality | Авторы</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        /* Базовые стили для темной темы сайта */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0d1623;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+</head>
+<body>
 
-        /* Шапка сайта (Навигация) */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 8%;
-            background-color: rgba(13, 22, 35, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="dashboard.html">Анализ данных</a>
+            <a href="bot.html">Помощник по качеству</a>
+            <a href="creators.html" class="active">Авторы</a>
+        </div>
+    </nav>
+</header>
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #10b981; /* Зеленый фирменный цвет */
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+<main>
+    <section class="hero" style="margin-bottom: 40px;">
+        <h1 style="font-size: 2.6rem; margin-bottom: 15px; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Разработчики проекта</h1>
+        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 700px; margin: 0 auto;">Интеллектуальная веб-система аудита данных, разработанная в рамках научно-практической работы по ИКТ.</p>
+    </section>
 
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
+    <section class="grid-container" style="max-width: 1100px; margin: 0 auto; display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; padding: 0 10px;">
+        
+        <div class="card" style="flex: 1; min-width: 320px; text-align: center; padding: 35px 25px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="width: 90px; height: 90px; background: rgba(26, 188, 156, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid #1abc9c; box-shadow: 0 0 20px rgba(26, 188, 156, 0.2);">
+                    <i class="fas fa-code" style="font-size: 2.2rem; color: #1abc9c;"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px; font-weight: 600;">Баталбеков Нурали</h3>
+                <p style="color: #1abc9c; font-weight: 600; font-size: 0.95rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Разработчик / ИКТ-Инженер</p>
+                <p style="font-size: 0.95rem; color: #94a3b8; line-height: 1.6; margin-bottom: 25px;">Отвечал за программную архитектуру проекта, разработку семантического движка чат-бота, интеграцию браузерных Web API и создание адаптивного Glassmorphism-интерфейса страниц.</p>
+            </div>
+            <a href="mailto:nurali.batalbekov@narxoz.kz" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: rgba(26, 188, 156, 0.15); color: #1abc9c; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(26, 188, 156, 0.2); transition: all 0.3s ease;" onmouseover="this.style.background='#1abc9c'; this.style.color='#fff';" onmouseout="this.style.background='rgba(26, 188, 156, 0.15)'; this.style.color='#1abc9c';">
+                <i class="fas fa-envelope"></i> nurali.batalbekov@narxoz.kz
+            </a>
+        </div>
 
-        nav a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 16px;
-            transition: color 0.3s;
-        }
+        <div class="card" style="flex: 1; min-width: 320px; text-align: center; padding: 35px 25px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="width: 90px; height: 90px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid #6366f1; box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);">
+                    <i class="fas fa-brain" style="font-size: 2.2rem; color: #6366f1;"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px; font-weight: 600;">Сатыбалдина Дильназ</h3>
+                <p style="color: #6366f1; font-weight: 600; font-size: 0.95rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Главный Аналитик / Менеджер</p>
+                <p style="font-size: 0.95rem; color: #94a3b8; line-height: 1.6; margin-bottom: 25px;">Отвечала за методологическую основу, промпт-инжиниринг мультимедийного ИИ-аватара HeyGen, сбор и формализацию метрик качества баз данных и проектирование бизнес-логики Data Governance.</p>
+            </div>
+            <a href="mailto:dilnaz.satybaldina@narxoz.kz" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: rgba(99, 102, 241, 0.15); color: #818cf8; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(99, 102, 241, 0.2); transition: all 0.3s ease;" onmouseover="this.style.background='#6366f1'; this.style.color='#fff';" onmouseout="this.style.background='rgba(99, 102, 241, 0.15)'; this.style.color='#818cf8';">
+                <i class="fas fa-envelope"></i> dilnaz.satybaldina@narxoz.kz
+            </a>
+        </div>
 
-        nav a:hover {
-            color: #ffffff;
-        }
+    </section>
 
-        nav a.active {
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-        }
+    <section class="hero" style="max-width: 1100px; margin: 40px auto 0 auto; padding: 30px; background: rgba(30, 41, 59, 0.3); border-radius: 16px; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+            <div style="background: rgba(26, 188, 156, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(26, 188, 156, 0.2);">
+                <i class="fas fa-university" style="font-size: 1.5rem; color: #1abc9c;"></i>
+            </div>
+            <div>
+                <h4 style="color: #fff; font-size: 1.2rem; font-weight: 600;">Академическая привязка проекта</h4>
+                <p style="font-size: 0.9rem; color: #94a3b8;">Дисциплина: Информационно-коммуникационные технологии (ИКТ)</p>
+            </div>
+        </div>
+        <p style="font-size: 1rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; line-height: 1.6;">
+            Проект разработан студентами <strong>Университета НАРХОЗ</strong>.<br>
+            Институт: <strong>ГИМУ и ШПиГҮ</strong> (Школа Политики и Государственного Управления / Государственное и местное управление).
+        </p>
+    </section>
+</main>
 
-        /* Основной контент */
-        main {
-            flex: 1;
-            padding: 60px 8%;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: -webkit-fill-available;
-        }
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
 
-        h1 {
-            font-size: 36px;
-            margin-bottom: 40px;
-            font-weight: 700;
-        }
-
-        /* ИСПРАВЛЕННАЯ СЕТКА: Контейнер для карточек разработчиков */
-        .creators-grid {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap; /* Чтобы на мобилках карточки переносились вниз */
-            margin-top: 20px;
-        }
-
-        /* Стили для карточки автора */
-        .creator-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 30px;
-            flex: 1;
-            min-width: 280px; /* Чтобы карточки не сжимались слишком сильно */
-            max-width: 450px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-        }
-
-        .creator-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            border-
+</body>
+</html>
