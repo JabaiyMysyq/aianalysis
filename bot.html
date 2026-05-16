@@ -2,34 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Интеллектуальный Помощник | DataQuality</title>
+    <title>Помощник по качеству | DataQuality</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* Стили для продвинутого интерфейса чата */
         .chat-wrapper {
-            max-width: 850px;
+            max-width: 800px;
             margin: 30px auto;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            height: 650px;
+            height: 600px;
         }
 
         .chat-header {
             background: #1a252f;
             color: white;
             padding: 20px;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
-
-        .bot-profile { display: flex; align-items: center; gap: 15px; }
 
         .chat-header .status-dot {
             width: 10px;
@@ -38,15 +37,6 @@
             border-radius: 5px;
             display: inline-block;
             animation: pulse 1.5s infinite;
-        }
-
-        .brain-load {
-            font-size: 0.8rem;
-            background: #34495e;
-            padding: 4px 8px;
-            border-radius: 12px;
-            color: #1abc9c;
-            font-family: monospace;
         }
 
         .chat-messages {
@@ -62,18 +52,17 @@
         .message {
             max-width: 75%;
             padding: 12px 16px;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 0.95rem;
-            line-height: 1.5;
-            position: relative;
+            line-height: 1.4;
         }
 
         .message.bot {
             background: white;
             color: #2c3e50;
             align-self: flex-start;
-            border-left: 5px solid #1abc9c;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-left: 4px solid #1abc9c;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .message.user {
@@ -86,8 +75,8 @@
         .chat-input-area {
             padding: 15px;
             background: white;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
             border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 10px;
@@ -95,38 +84,56 @@
 
         .chat-input-area input {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: inherit;
             font-size: 0.95rem;
             outline: none;
-            transition: 0.2s;
         }
 
-        .chat-input-area input:focus { border-color: #1abc9c; box-shadow: 0 0 0 3px rgba(26,188,156,0.1); }
+        .chat-input-area input:focus {
+            border-color: #1abc9c;
+        }
 
         .chat-input-area button {
             background: #1abc9c;
             color: white;
             border: none;
-            padding: 0 24px;
-            border-radius: 8px;
+            padding: 0 20px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
         }
 
-        .chat-input-area button:hover { background: #16a085; }
+        .chat-input-area button:hover {
+            background: #16a085;
+        }
 
         .suggested-hints {
-            display: flex; gap: 10px; padding: 0 20px 15px 20px; background: #f8fafc; flex-wrap: wrap;
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 15px 20px;
+            background: #f8fafc;
+            flex-wrap: wrap;
         }
 
         .hint-btn {
-            background: #e2e8f0; color: #475569; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .hint-btn:hover { background: #cbd5e1; color: #1e293b; }
+
+        .hint-btn:hover {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
 
         @keyframes pulse {
             0% { opacity: 0.4; }
@@ -151,56 +158,140 @@
 
 <main>
     <div style="text-align: center; margin-top: 20px;">
-        <h2><i class="fas fa-brain"></i> Экспертная Система Data Governance v3.0</h2>
-        <p style="color: #666;">Гибридный ИИ-помощник с анализом тональности речи и обучением на лету</p>
+        <h2><i class="fas fa-robot"></i> Интеллектуальный ИИ-Консультант</h2>
+        <p style="color: #666;">Задайте эксперный вопрос по управлению данными или качеству систем</p>
     </div>
 
     <div class="chat-wrapper">
         <div class="chat-header">
-            <div class="bot-profile">
-                <div class="status-dot"></div>
-                <div>
-                    <strong>DataQuality Семантический Агент</strong>
-                    <div style="font-size: 0.75rem; color: #bdc3c7;">NLP Ядро активно | Контекст включен</div>
-                </div>
+            <div class="status-dot"></div>
+            <div>
+                <strong>DataQuality AI Agent</strong>
+                <div style="font-size: 0.75rem; color: #bdc3c7;">Модель: Сквозной аудит ИКТ</div>
             </div>
-            <div class="brain-load" id="brainLoad">Выучено терминов: +0</div>
         </div>
 
         <div class="chat-messages" id="chatWindow">
             <div class="message bot">
-                Приветствую! Я обновленная экспертная система. Я умею распознавать эмоции, запоминать контекст разговора и обучать себя новым терминам прямо в ходе беседы.
+                Здравствуйте! Я ваш ИИ-консультант по Data Governance и качеству данных. 
                 <br><br>
-                Если вы хотите проверить свою базу данных, нажмите кнопку <b>"Начать аудит"</b> или напишите это вручную. Также вы можете задать любой профессиональный вопрос по качеству данных!
+                Вы можете спросить меня о терминах (полнота, точность) или задать развернутый вопрос, например: 
+                <strong>«Как внедрить маски ввода?»</strong> или <strong>«Зачем госорганам чистить данные?»</strong>. Что вас интересует?
             </div>
         </div>
 
-        <div class="suggested-hints" id="hintsContainer">
-            <button class="hint-btn" onclick="useHint('Начать аудит данных')">📊 Начать аудит</button>
-            <button class="hint-btn" onclick="useHint('У нас все плохо с базами, куча ошибок!')">⚠️ Проверить негативный контекст</button>
-            <button class="hint-btn" onclick="useHint('What is Data Governance?')">💡 Что такое Data Governance?</button>
+        <div class="suggested-hints">
+            <button class="hint-btn" onclick="useHint('Зачем нужно качество данных?')">Зачем нужно качество данных?</button>
+            <button class="hint-btn" onclick="useHint('Что такое полнота?')">Что такое полнота?</button>
+            <button class="hint-btn" onclick="useHint('Как исправить плохую точность?')">Как исправить плохую точность?</button>
+            <button class="hint-btn" onclick="useHint('Что важнее: точность или полнота?')">Что важнее?</button>
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Напишите мне что-нибудь (например: у нас много дубликатов)..." onkeypress="handleKeyPress(event)">
+            <input type="text" id="userInput" placeholder="Введите ваш вопрос здесь..." onkeypress="handleKeyPress(event)">
             <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 </main>
 
 <script>
-    // ГЛОБАЛЬНЫЕ СОСТОЯНИЯ ДИАЛОГА
-    let currentState = 'IDLE'; 
-    let auditData = { system: '', completeness: 0, accuracy: 0 };
-    let lastUnknownKeyword = '';
-    
-    // СТАТИЧЕСКАЯ БАЗА ЗНАНИЙ
-    let knowledgeBase = {
-        'governance': '<b>Data Governance (Управление данными)</b> — это комплексная дисциплина, направленная на создание однозначного и структурированного контроля над корпоративными и государственными данными.',
-        'полнот': '<b>Полнота (Completeness)</b> измеряет долю заполненных обязательных реквизитов (например, ИИН, ФИО, контакты). Пропуски в полях сильно искажают общую аналитику.',
-        'точност': '<b>Точность (Accuracy)</b> отражает уровень соответствия данных реальному положению дел. База может быть заполненной на 100%, но содержать вымышленные или устаревшие записи.',
-        'дубликат': 'Для борьбы с <b>дубликатами строк</b> рекомендуется использовать алгоритмы дедупликации и нечеткого поиска, сопоставляющие похожие имена или опечатки в ИИН.',
-        'метрики': 'Основные метрики качества данных в ИКТ: Полнота (Completeness), Точность (Accuracy), Своевременность (Timeliness) и Непротиворечивость (Consistency).'
-    };
+    // База знаний бота (словарь триггеров и умных ответов)
+    const aiKnowledgeBase = [
+        {
+            keywords: ['зачем', 'цель', 'роль', 'государств', 'управлен'],
+            response: 'В государственном и корпоративном управлении качество данных — это фундамент. Если в базах данных (например, налоговой или кадровой) содержатся ошибки, аналитика будет неверной. Это приводит к ошибочным бюджетам, сбоям при выдаче госуслуг гражданам и потере ресурсов. Качественные данные экономят до 30% бюджета на ИТ-инфраструктуру.'
+        },
+        {
+            keywords: ['полнота', 'completeness', 'пропуск'],
+            response: '<b>Полнота (Completeness)</b> показывает, все ли обязательные сведения собраны в системе. Если в базе данных CRM или кадрового учета у половины сотрудников не заполнены ИИН или номера телефонов — полнота системы будет всего 50%. Это мешает автоматизации процессов.'
+        },
+        {
+            keywords: ['точность', 'accuracy', 'ошибк'],
+            response: '<b>Точность (Accuracy)</b> отвечает за достоверность информации. Данные могут быть полными (все поля заполнены), но неточными (например, вместо реального адреса написан случайный набор букв). Высокая точность гарантирует, что информации в системе можно доверять.'
+        },
+        {
+            keywords: ['исправить', 'маск', 'ввод', 'валидац', 'решен'],
+            response: 'Для исправления ошибок менеджмент должен внедрить три шага:<br>1. <b>Маски ввода</b> на сайтах и в программах (например, запретить вводить буквы в поле телефона).<br>2. <b>Автоматическую дедупликацию</b> (скрипты, удаляющие повторы по совпадению ИИН).<br>3. <b>Кросс-валидацию</b> — сверку данных между разными ведомствами в реальном времени.'
+        },
+        {
+            keywords: ['что важнее', 'сравн', 'приоритет'],
+            response: 'Это две стороны одной медали, но с точки зрения принятия решений <b>Точность важнее</b>. Лучше иметь базу данных на 50% сотрудников, но со стопроцентно верными телефонами (высокая точность), чем базу на 100% сотрудников, где все контакты вымышленные или устаревшие.'
+        },
+        {
+            keywords: ['привет', 'здравствуй', 'салем'],
+            response: 'Приветствую! Рад помочь. Задайте любой вопрос, связанный с качеством данных информационной системы, методами очистки или автоматическим аудитом!'
+        }
+    ];
 
-    //
+    // Функция отправки сообщения
+    function sendMessage() {
+        const inputField = document.getElementById('userInput');
+        const queryText = inputField.value.trim();
+        
+        if (queryText === '') return;
+
+        // 1. Отображаем сообщение пользователя
+        appendMessage(queryText, 'user');
+        inputField.value = '';
+
+        // 2. Имитируем "ИИ думает" и выдаем ответ
+        setTimeout(() => {
+            const botAnswer = generateSmartResponse(queryText);
+            appendMessage(botAnswer, 'bot');
+        }, 400);
+    }
+
+    // Алгоритм семантического поиска ответа
+    function generateSmartResponse(userQuery) {
+        const lowerQuery = userQuery.toLowerCase();
+        
+        // Ищем совпадения ключевых слов в базе знаний
+        for (let item of aiKnowledgeBase) {
+            // Если хотя бы одно ключевое слово из группы есть в вопросе пользователя
+            const match = item.keywords.some(keyword => lowerQuery.includes(keyword));
+            if (match) {
+                return item.response;
+            }
+        }
+
+        // Дефолтный ответ, если точных совпадений терминов не найдено (свободный вопрос)
+        return `Я проанализировал ваш запрос: "<i>${userQuery}</i>". С точки зрения методологии Data Quality, данный аспект требует настройки сквозного мониторинга. Рекомендуется проверить метрики <b>Полноты</b> и <b>Точности</b> данной системы на нашей <a href="dashboard.html" style="color: #1abc9c; font-weight:bold;">Аналитической панели</a>, чтобы выявить аномалии.`;
+    }
+
+    // Добавление блока сообщения на экран
+    function appendMessage(text, sender) {
+        const chatWindow = document.getElementById('chatWindow');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        messageDiv.innerHTML = text;
+        
+        chatWindow.appendChild(messageDiv);
+        
+        // Автоматическая прокрутка чата вниз при новых ответах
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Использование кнопок-подсказок
+    function useHint(hintText) {
+        document.getElementById('userInput').value = hintText;
+        sendMessage();
+    }
+
+    // Отправка по нажатию Enter
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+    </div>
+</footer>
+
+</body>
+</html>
