@@ -384,23 +384,115 @@
         const output = document.getElementById('aiOutput');
         const reportBox = document.getElementById('aiReportBox');
 
-        btn.disabled = true; btn.style.opacity = "0.5";
-        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
+        // Получаем все строки таблицы
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        let totalRows = rows.length;
+
+        // Если таблица пустая, ИИ сразу выдает предупреждение
+        if (totalRows === 0) {
+            progCont.style.display = "none";
+            output.style.display = "none";
+            reportBox.innerHTML = "<h4><i class='fas fa-exclamation-triangle' style='color:#e74c3c;'></i> Ошибка аудита</h4><p>Операционная база данных пуста. Добавьте хотя бы одну систему в таблицу для проведения ИКТ-анализа.</p>";
+            reportBox.style.display = "block";
+            return;
+        }
+
+        // Блокируем кнопку и включаем анимацию загрузки
+        btn.disabled = true; 
+        btn.style.opacity = "0.5";
+        progCont.style.display = "block"; 
+        output.style.display = "block"; 
+        reportBox.style.display = "none";
 
         let progress = 0;
         const interval = setInterval(() => {
             progress += 20;
             progBar.style.width = progress + "%";
-            output.innerText = `> [SCANNING_METRICS]... Вычисление коэффициентов качества: ${progress}%`;
             
+            // Красивые логи сканирования в стиле консоли
+            if (progress === 20) output.innerText = "> [SCANNING]: Считывание структуры DOM и извлечение весов систем...";
+            else if (progress === 40) output.innerText = "> [PARSING]: Очистка строк от символов '%' и преобразование метрик в массивы чисел...";
+            else if (progress === 60) output.innerText = "> [AI_LOGIC]: Расчет математического ожидания и поиск критических отклонений...";
+            else if (progress === 80) output.innerText = "> [COMPILING]: Формирование экспертного заключения по стандартам Data Governance...";
+
             if (progress >= 100) {
                 clearInterval(interval);
-                output.innerText = `> [COMPLETE]: Анализ успешно завершен.`;
-                reportBox.innerHTML = "<h4><i class='fas fa-file-medical-alt'></i> Экспертная записка ИИ-Агента</h4><p>Аудит зафиксировал обновление операционных метрик систем. Баланс точности и полноты находится в пределах допустимой ИКТ-нормы.</p>";
+                output.innerText = `> [COMPLETE]: Анализ успешно завершен. Сгенерирован динамический отчет.`;
+
+                // Переменные для расчета реальных метрик
+                let sumCompleteness = 0;
+                let sumAccuracy = 0;
+                let worstSystem = "";
+                let worstAccuracy = 101; // Вспомогательное число для поиска минимума
+                let worstCompleteness = 0;
+
+                // Пробегаемся по каждой строчке таблицы и собираем цифры
+                rows.forEach(row => {
+                    const name = row.cells[0].innerText.trim() || "Неизвестная система";
+                    
+                    // Извлекаем только цифры из ячеек (убираем знаки % и пробелы)
+                    let compVal = parseInt(row.querySelector('.completeness-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+                    let accVal = parseInt(row.querySelector('.accuracy-cell').innerText.replace(/[^0-9]/g, '')) || 0;
+
+                    sumCompleteness += compVal;
+                    sumAccuracy += accVal;
+
+                    // Ищем систему с самыми худшими показателями точности
+                    if (accVal < worstAccuracy) {
+                        worstAccuracy = accVal;
+                        worstCompleteness = compVal;
+                        worstSystem = name;
+                    }
+                });
+
+                // Считаем средние значения по всей таблице
+                let avgCompleteness = (sumCompleteness / totalRows).toFixed(1);
+                let avgAccuracy = (sumAccuracy / totalRows).toFixed(1);
+
+                // Генерируем динамический текст отчета в зависимости от критичности ситуации
+                let riskLevel = "НИЗКИЙ";
+                let riskColor = "#1abc9c";
+                let statusComment = "Инфраструктура работает стабильно. Критических аномалий в бизнес-метриках не обнаружено.";
+
+                if (worstAccuracy < 80) {
+                    riskLevel = "КРИТИЧЕСКИЙ (ТРЕБУЕТСЯ ВМЕШАТЕЛЬСТВО)";
+                    riskColor = "#ef4444";
+                    statusComment = `Обнаружен опасный вектор уязвимости данных. Источник <strong>«${worstSystem}»</strong> имеет недопустимо низкую точность (${worstAccuracy}%). Это искажает сквозную аналитику организации.`;
+                } else if (worstAccuracy >= 80 && worstAccuracy < 95) {
+                    riskLevel = "СРЕДНИЙ (ВЕРИФИКАЦИЯ)";
+                    riskColor = "#f59e0b";
+                    statusComment = `Системы работают в штатном режиме, однако источник <strong>«${worstSystem}»</strong> требует внимания и профилактической дедупликации данных.`;
+                }
+
+                // Выводим готовый красивый HTML-отчет, который зависит от содержимого таблицы
+                reportBox.innerHTML = `
+                    <h4 style="color: #1abc9c; margin-top: 0;"><i class="fas fa-file-medical-alt"></i> Сводный аналитический отчет ИИ-агента</h4>
+                    
+                    <p style="margin: 10px 0;"><strong>1. Агрегированные метрики ИКТ-инфраструктуры:</strong></p>
+                    <ul style="margin: 5px 0 15px 20px; padding: 0;">
+                        <li>Всего проверено информационных систем: <strong>${totalRows}</strong></li>
+                        <li>Средний индекс полноты (Completeness): <strong style="color: #1abc9c;">${avgCompleteness}%</strong></li>
+                        <li>Средний индекс точности (Accuracy): <strong style="color: #1abc9c;">${avgAccuracy}%</strong></li>
+                    </ul>
+                    
+                    <p style="margin: 10px 0;"><strong>2. Оценка рисков и аномалии:</strong></p>
+                    <p style="margin: 5px 0 15px 0;">Уровень угрозы Data Governance: <span style="color: ${riskColor}; font-weight: bold;">${riskLevel}</span></p>
+                    <p style="margin: 5px 0 15px 0; background: rgba(15, 23, 42, 0.3); padding: 10px; border-radius: 6px; border-left: 3px solid ${riskColor};">${statusComment}</p>
+                    
+                    <p style="margin: 10px 0;"><strong>3. Техническое предписание ИИ-аудитора:</strong></p>
+                    <ul style="margin: 5px 0 0 20px; padding: 0;">
+                        <li>Для <strong>«${worstSystem}»</strong>: Принудительно запустить скрипты очистки базы данных, настроить триггеры логирования пустых полей (NULL) и проверить целостность внешних ключей.</li>
+                        <li>Для остальных узлов: Провести плановый аудит входящих транзакций в течение 7 рабочих дней.</li>
+                    </ul>
+                `;
+
+                // Показываем блок с отчетом и возвращаем кнопку в активное состояние
                 reportBox.style.display = "block";
-                btn.disabled = false; btn.style.opacity = "1";
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.innerHTML = "<i class='fas fa-sync-alt'></i> Перезапустить ИИ-аудит";
             }
-        }, 150);
+        }, 200);
     }
 </script>
 
