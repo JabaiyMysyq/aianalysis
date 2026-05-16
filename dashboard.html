@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Принудительное наложение стилей, чтобы внешние файлы не ломали видимость */
+        /* Гарантируем корректное отображение поверх глобального style.css */
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -18,7 +18,7 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 340px;
+            grid-template-columns: 1fr 360px;
             gap: 30px;
             margin-top: 25px;
             align-items: start;
@@ -30,116 +30,108 @@
             }
         }
 
-        /* КОНТЕЙНЕР ТАБЛИЦЫ - ГАРАНТИРУЕТ ВИДИМОСТЬ */
+        /* Контейнер для таблицы */
         .table-visible-wrapper {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            width: 100% !important;
+            width: 100%;
             overflow-x: auto;
-            background: #ffffff !important;
+            background: rgba(30, 41, 59, 0.4);
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             margin-bottom: 20px;
         }
 
-        /* СВЕТЛАЯ ТАБЛИЦА С ЧЕРНЫМ ТЕКСТОМ */
+        /* Интеграция таблицы в ваш темный стиль */
         .white-data-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-            display: table !important;
+            width: 100%;
+            border-collapse: collapse;
+            color: #ffffff;
         }
 
         .white-data-table th {
-            background-color: #1abc9c !important;
-            color: #ffffff !important;
-            padding: 16px !important;
-            font-weight: 600 !important;
-            text-align: left !important;
-            font-size: 0.95rem !important;
-            border: none !important;
+            background-color: #1abc9c;
+            color: #ffffff;
+            padding: 16px;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.95rem;
         }
 
         .white-data-table td {
-            color: #0f172a !important;
-            background-color: #ffffff !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-            padding: 14px 16px !important;
-            font-size: 0.95rem !important;
-            text-align: left !important;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* РЕДАКТИРУЕМЫЕ ЯЧЕЙКИ */
-        .white-data-table td[contenteditable="true"] {
-            background-color: #fffbeb !important;
-            cursor: pointer !important;
-        }
-        
-        .white-data-table td[contenteditable="true"]:focus {
-            background-color: #ffffff !important;
-            outline: 2px solid #1abc9c !important;
-        }
-
-        /* ПАНЕЛЬ ДОБАВЛЕНИЯ СТРОК */
+        /* Стилизация интерактивного ввода (как на вашем скриншоте) */
         .add-row-form-panel {
-            background: rgba(30, 41, 59, 0.8) !important;
-            backdrop-filter: blur(10px);
-            padding: 20px !important;
-            border-radius: 12px !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            display: flex !important;
-            gap: 15px !important;
-            flex-wrap: wrap !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
+            background: rgba(30, 41, 59, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .add-row-form-panel input {
-            padding: 10px 14px !important;
-            background: rgba(15, 23, 42, 0.8) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            border-radius: 8px !important;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px;
             color: #ffffff !important;
-            font-family: inherit !important;
-            outline: none !important;
+            outline: none;
+            font-size: 0.95rem;
         }
 
-        .add-row-form-panel input::placeholder {
-            color: #94a3b8 !important;
+        .add-row-form-panel input:focus {
+            border-color: #1abc9c !important;
         }
 
-        /* КНОПКИ */
+        /* Кнопки */
         .btn-action {
-            padding: 10px 16px !important;
-            border: none !important;
-            border-radius: 8px !important;
-            cursor: pointer !important;
-            font-weight: 600 !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
         
-        .btn-add { background: #1abc9c !important; color: white !important; }
-        .btn-add:hover { background: #16a085 !important; }
+        .btn-add { background: #1abc9c; color: white; }
+        .btn-add:hover { background: #16a085; }
         
-        .btn-delete { background: #fee2e2 !important; color: #ef4444 !important; padding: 6px 12px !important; font-size: 0.85rem !important; border-radius: 6px !important; }
-        .btn-delete:hover { background: #ef4444 !important; color: white !important; }
+        .btn-delete { background: rgba(231, 76, 60, 0.2); color: #ef4444; padding: 6px 12px; border-radius: 6px; }
+        .btn-delete:hover { background: #e74c3c; color: white; }
         
-        .btn-reset-table { background: rgba(255, 255, 255, 0.05) !important; color: #94a3b8 !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; margin-left: 10px; }
+        .btn-reset-table { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); margin-left: 10px; }
+        .btn-reset-table:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .filter-btn.active { background: #1abc9c; color: white; border-color: #1abc9c; }
 
         .chart-glass-box {
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(30, 41, 59, 0.4);
             padding: 25px 20px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .badge-excellent { background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-normal { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .badge-critical { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        /* Статусы-бейджи */
+        .badge-excellent { background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
+        .badge-normal { background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
+        .badge-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -150,7 +142,7 @@
         <div class="menu">
             <a href="index.html">Главная</a>
             <a href="dashboard.html" class="active">Анализ данных</a>
-            <a href="bot.html">Помощник по качеству</a>
+            <a href="bot.html">Помощник по качестве</a>
             <a href="creators.html">Авторы</a>
         </div>
     </nav>
@@ -186,22 +178,22 @@
             </div>
 
             <div class="add-row-form-panel">
-                <input type="text" id="newSystem" placeholder="Название системы" style="flex: 2; min-width: 180px;">
-                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 95%)" style="flex: 1; min-width: 100px;">
-                <input type="text" id="newAccuracy" placeholder="Точность (напр. 90%)" style="flex: 1; min-width: 100px;">
+                <input type="text" id="newSystem" placeholder="Название системы" style="flex: 2; min-width: 150px;">
+                <input type="text" id="newCompleteness" placeholder="Полнота" style="flex: 1; min-width: 80px;">
+                <input type="text" id="newAccuracy" placeholder="Точность" style="flex: 1; min-width: 80px;">
                 <button class="btn-action btn-add" onclick="addNewRow()"><i class="fas fa-plus"></i> Добавить</button>
             </div>
         </div>
 
         <div class="chart-glass-box">
             <h3 style="color:#fff; margin:0 0 20px 0; font-size:1.1rem;">Живой график качества</h3>
-            <div style="position: relative; height: 240px;">
+            <div style="position: relative; height: 240px; display: flex; justify-content: center;">
                 <canvas id="qualityChart"></canvas>
             </div>
         </div>
     </div>
 
-    <section class="ai-control-panel" style="background: rgba(30, 41, 59, 0.6); padding: 30px; border-radius: 15px; margin-top: 40px; border: 1px solid rgba(255,255,255,0.08);">
+    <section class="ai-control-panel" style="background: rgba(30, 41, 59, 0.4); padding: 30px; border-radius: 15px; margin-top: 40px; border: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
             <div>
                 <h3 style="color:#fff;"><i class="fas fa-microchip" style="color: #1abc9c;"></i> Аналитический ИИ-Агент</h3>
@@ -211,17 +203,18 @@
                 Запустить ИИ-аудит
             </button>
         </div>
-        <div class="progress-container" id="progCont" style="width: 100%; background: #34495e; height: 10px; border-radius: 5px; margin: 20px 0; display: none;">
-            <div class="progress-bar" id="progBar" style="width: 0%; height: 100%; background: #1abc9c; border-radius: 5px; transition: width 0.1s;"></div>
+        <div class="progress-container" id="progCont" style="width: 100%; background: #1e293b; height: 8px; border-radius: 4px; margin: 20px 0; display: none;">
+            <div class="progress-bar" id="progBar" style="width: 0%; height: 100%; background: #1abc9c; border-radius: 4px; transition: width 0.2s;"></div>
         </div>
-        <div id="aiOutput" style="margin-top: 20px; font-family: monospace; color: #1abc9c; display: none;"></div>
-        <div class="ai-report-box" id="aiReportBox" style="background: #1e293b; border-left: 5px solid #1abc9c; padding: 20px; margin-top: 20px; border-radius: 8px; display: none; color: #ecf0f1;"></div>
+        <div id="aiOutput" style="margin-top: 20px; font-family: monospace; color: #1abc9c; display: none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;"></div>
+        <div class="ai-report-box" id="aiReportBox" style="background: #1e293b; border-left: 4px solid #1abc9c; padding: 20px; margin-top: 20px; border-radius: 8px; display: none; color: #ecf0f1;"></div>
     </section>
 </main>
 
 <script>
     let qualityChart;
 
+    // Исходные данные, если LocalStorage пуст
     const defaultData = [
         { system: "CRM Система", completeness: "94%", accuracy: "88%" },
         { system: "Бухгалтерия (ERP)", completeness: "99%", accuracy: "97%" },
@@ -241,7 +234,13 @@
                     borderWidth: 0
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
         });
         loadTableData();
     };
@@ -273,4 +272,137 @@
                 <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${item.completeness}</td>
                 <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${item.accuracy}</td>
                 <td class="status-cell"></td>
-                <td><button class="btn-action btn-delete" onclick
+                <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            tbody.appendChild(newTr);
+        });
+        calculateStatuses();
+    }
+
+    function handleTableChange() {
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    function calculateStatuses() {
+        let excellentCount = 0, normalCount = 0, criticalCount = 0;
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        
+        rows.forEach(row => {
+            const accuracyCell = row.querySelector('.accuracy-cell');
+            const statusCell = row.querySelector('.status-cell');
+            let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
+
+            if (accuracyValue >= 95) {
+                statusCell.innerHTML = `<span class="badge-excellent">Отлично</span>`;
+                row.setAttribute('data-status', 'excellent');
+                excellentCount++;
+            } else if (accuracyValue >= 80 && accuracyValue < 95) {
+                statusCell.innerHTML = `<span class="badge-normal">Норма</span>`;
+                row.setAttribute('data-status', 'normal');
+                normalCount++;
+            } else {
+                statusCell.innerHTML = `<span class="badge-critical">Критично</span>`;
+                row.setAttribute('data-status', 'bad');
+                criticalCount++;
+            }
+        });
+
+        if (qualityChart) {
+            qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
+            qualityChart.update();
+        }
+    }
+
+    // ТА САМАЯ ФУНКЦИЯ ДОБАВЛЕНИЯ СТРОКИ
+    function addNewRow() {
+        const system = document.getElementById('newSystem').value.trim();
+        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
+
+        if (!system) {
+            alert('Введите название системы!');
+            return;
+        }
+
+        const tbody = document.getElementById('tableBody');
+        const newTr = document.createElement('tr');
+        newTr.innerHTML = `
+            <td contenteditable="true" oninput="handleTableChange()">${system}</td>
+            <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${completeness}</td>
+            <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${accuracy}</td>
+            <td class="status-cell"></td>
+            <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+        `;
+        tbody.appendChild(newTr);
+        
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+
+        // Очищаем поля ввода
+        document.getElementById('newSystem').value = '';
+        document.getElementById('newCompleteness').value = '';
+        document.getElementById('newAccuracy').value = '';
+    }
+
+    function deleteRow(buttonElem) {
+        buttonElem.closest('tr').remove();
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    function resetToDefaultData() {
+        if(confirm("Восстановить базовые три строки данных?")) {
+            localStorage.removeItem('dqTableData');
+            loadTableData();
+            resetAiButtonState();
+        }
+    }
+
+    function resetAiButtonState() {
+        document.getElementById('aiBtn').disabled = false;
+        document.getElementById('aiBtn').style.opacity = "1";
+        document.getElementById('agentStatus').innerText = "Данные изменены. ИИ готов к перерасчету...";
+    }
+
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('#dataTable tbody tr').forEach(row => {
+            if (status === 'all') row.style.display = '';
+            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
+        });
+    }
+
+    function startAdvancedAnalysis() {
+        const btn = document.getElementById('aiBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+        const output = document.getElementById('aiOutput');
+        const reportBox = document.getElementById('aiReportBox');
+
+        btn.disabled = true; btn.style.opacity = "0.5";
+        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 20;
+            progBar.style.width = progress + "%";
+            output.innerText = `> [SCANNING_METRICS]... Вычисление коэффициентов качества: ${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                output.innerText = `> [COMPLETE]: Анализ успешно завершен.`;
+                reportBox.innerHTML = "<h4><i class='fas fa-file-medical-alt'></i> Экспертная записка ИИ-Агента</h4><p>Аудит зафиксировал обновление операционных метрик систем. Баланс точности и полноты находится в пределах допустимой ИКТ-нормы.</p>";
+                reportBox.style.display = "block";
+                btn.disabled = false; btn.style.opacity = "1";
+            }
+        }, 150);
+    }
+</script>
+
+</body>
+</html>
