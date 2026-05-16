@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Сетка для таблицы и графика */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 320px;
             gap: 30px;
             margin-top: 20px;
             align-items: start;
@@ -20,7 +19,6 @@
             .dashboard-grid { grid-template-columns: 1fr; }
         }
 
-        /* Контейнер для графика с жестким ограничением высоты */
         .chart-container-box {
             background: white;
             padding: 20px;
@@ -31,82 +29,77 @@
             flex-direction: column;
             align-items: center;
             max-width: 320px;
-            height: 340px;
+            height: 360px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .chart-container-box h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            color: #2c3e50;
+        .chart-container-box h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: #2c3e50; }
+
+        /* Форма добавления новых строк */
+        .add-row-form {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        /* Панель управления ИИ-агентом */
-        .ai-control-panel {
-            background: #1a252f;
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 40px;
-            position: relative;
-            overflow: hidden;
+        .add-row-form input, .add-row-form select {
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-family: inherit;
         }
 
-        /* Анимированный прогресс-бар */
-        .progress-container {
-            width: 100%;
-            background: #34495e;
-            height: 10px;
-            border-radius: 5px;
-            margin: 20px 0;
-            display: none;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: #1abc9c;
-            border-radius: 5px;
-            transition: width 0.1s;
-        }
-
-        /* Карточки рекомендаций ИИ */
-        .recommendation-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-            display: none;
-        }
-
-        .rec-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #1abc9c;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        /* Интерактивные кнопки фильтрации */
-        .filter-btn {
-            padding: 8px 15px;
-            border: 1px solid #1abc9c;
-            background: transparent;
-            color: #1abc9c;
+        .btn-action {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 5px;
-            margin-right: 10px;
-            transition: 0.3s;
             font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-add { background: #1abc9c; color: white; }
+        .btn-add:hover { background: #16a085; }
+        .btn-delete { background: #e74c3c; color: white; padding: 4px 8px; font-size: 0.85rem; }
+        .btn-delete:hover { background: #c0392b; }
+
+        /* Стили для редактируемых ячеек */
+        td[contenteditable="true"] {
+            background-color: #fffdec;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        td[contenteditable="true"]:focus {
+            background-color: #fff;
+            outline: 2px solid #1abc9c;
         }
 
-        .filter-btn.active, .filter-btn:hover {
-            background: #1abc9c;
-            color: white;
+        .ai-control-panel {
+            background: #1a252f; color: white; padding: 30px; border-radius: 15px; margin-top: 40px;
         }
+
+        .progress-container {
+            width: 100%; background: #34495e; height: 10px; border-radius: 5px; margin: 20px 0; display: none;
+        }
+
+        .progress-bar { width: 0%; height: 100%; background: #1abc9c; border-radius: 5px; transition: width 0.1s; }
+
+        .recommendation-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; display: none;
+        }
+
+        .rec-card { background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #1abc9c; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .filter-btn {
+            padding: 8px 15px; border: 1px solid #1abc9c; background: transparent; color: #1abc9c; cursor: pointer; border-radius: 5px; margin-right: 10px; transition: 0.3s; font-weight: bold;
+        }
+        .filter-btn.active, .filter-btn:hover { background: #1abc9c; color: white; }
     </style>
 </head>
 <body>
@@ -117,7 +110,7 @@
         <div class="menu">
             <a href="index.html">Главная</a>
             <a href="dashboard.html" class="active">Анализ данных</a>
-            <a href="bot.html">Помощник по качеству</a>
+            <a href="bot.html">Помощник по quality</a>
             <a href="creators.html">Авторы</a>
         </div>
     </nav>
@@ -125,7 +118,7 @@
 
 <main>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-        <h2><i class="fas fa-tachometer-alt"></i> Интерактивный Дашборд Качества</h2>
+        <h2><i class="fas fa-tachometer-alt"></i> Динамический Системный Аудит</h2>
         <div>
             <span style="font-size: 0.9rem; color: #666;">Фильтр: </span>
             <button class="filter-btn active" onclick="filterTable('all', this)">Все</button>
@@ -134,47 +127,73 @@
     </div>
 
     <div class="dashboard-grid">
-        <div class="table-container" style="margin: 0;">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>Система</th>
-                        <th>Полнота</th>
-                        <th>Точность</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr data-status="good">
-                        <td>CRM Система</td>
-                        <td>94%</td>
-                        <td>88%</td>
-                        <td><span class="status-badge status-good">Норма</span></td>
-                    </tr>
-                    <tr data-status="good">
-                        <td>Бухгалтерия (ERP)</td>
-                        <td>99%</td>
-                        <td>97%</td>
-                        <td><span class="status-badge status-good">Отлично</span></td>
-                    </tr>
-                    <tr data-status="bad">
-                        <td>Кадровый учет (HR)</td>
-                        <td>72%</td>
-                        <td>65%</td>
-                        <td><span class="status-badge status-bad">Критично</span></td>
-                    </tr>
-                    <tr data-status="bad">
-                        <td>Архив документов</td>
-                        <td>45%</td>
-                        <td>50%</td>
-                        <td><span class="status-badge status-bad">Ошибки</span></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div>
+            <div class="table-container" style="margin: 0;">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Система (Клик для ред.)</th>
+                            <th>Полнота</th>
+                            <th>Точность</th>
+                            <th>Статус</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-status="good">
+                            <td contenteditable="true" oninput="updateChartFromTable()">CRM Система</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">94%</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">88%</td>
+                            <td>
+                                <select onchange="updateRowStatus(this)">
+                                    <option value="good" selected>Отлично / Норма</option>
+                                    <option value="bad">Критично / Ошибки</option>
+                                </select>
+                            </td>
+                            <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
+                        </tr>
+                        <tr data-status="good">
+                            <td contenteditable="true" oninput="updateChartFromTable()">Бухгалтерия (ERP)</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">99%</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">97%</td>
+                            <td>
+                                <select onchange="updateRowStatus(this)">
+                                    <option value="good" selected>Отлично / Норма</option>
+                                    <option value="bad">Критично / Ошибки</option>
+                                </select>
+                            </td>
+                            <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
+                        </tr>
+                        <tr data-status="bad">
+                            <td contenteditable="true" oninput="updateChartFromTable()">Кадровый учет (HR)</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">72%</td>
+                            <td contenteditable="true" oninput="updateChartFromTable()">65%</td>
+                            <td>
+                                <select onchange="updateRowStatus(this)">
+                                    <option value="good">Отлично / Норма</option>
+                                    <option value="bad" selected>Критично / Ошибки</option>
+                                </select>
+                            </td>
+                            <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="add-row-form">
+                <input type="text" id="newSystem" placeholder="Название системы" style="flex: 2;">
+                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 85%)" style="flex: 1;">
+                <input type="text" id="newAccuracy" placeholder="Точность (напр. 80%)" style="flex: 1;">
+                <select id="newStatus" style="flex: 1.5;">
+                    <option value="good">Отлично / Норма</option>
+                    <option value="bad">Критично / Ошибки</option>
+                </select>
+                <button class="btn-action btn-add" onclick="addNewRow()"><i class="fas fa-plus"></i> Добавить</button>
+            </div>
         </div>
 
         <div class="chart-container-box">
-            <h3>Распределение качества</h3>
+            <h3>Живой график качества</h3>
             <canvas id="qualityChart"></canvas>
         </div>
     </div>
@@ -183,79 +202,136 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
             <div>
                 <h3><i class="fas fa-microchip"></i> AI-Агент: Глубокая проверка</h3>
-                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к анализу структуры данных по 4-м метрикам...</p>
+                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к динамическому анализу текущей таблицы...</p>
             </div>
             <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding:15px 25px; background:#1abc9c; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">
                 <i class="fas fa-play"></i> Запустить ИИ-аудит
             </button>
         </div>
-
-        <div class="progress-container" id="progCont">
-            <div class="progress-bar" id="progBar"></div>
-        </div>
-
-        <div id="aiOutput" style="margin-top:20px; font-family:'Courier New', monospace; font-size:0.9rem; color:#1abc9c; display:none;">
-            [SYSTEM]: Инициализация нейронного сканирования...
-        </div>
+        <div class="progress-container" id="progCont"><div class="progress-bar" id="progBar"></div></div>
+        <div id="aiOutput" style="margin-top:20px; font-family:'Courier New', monospace; font-size:0.9rem; color:#1abc9c; display:none;"></div>
     </section>
 
     <div class="recommendation-cards" id="recCards">
         <div class="rec-card">
             <h4><i class="fas fa-broom"></i> Очистка данных</h4>
-            <p>Рекомендуется удалить 142 дубликата в базе CRM, выявленных по совпадению ИИН и номера телефона.</p>
+            <p>Рекомендуется удалить дубликаты, выявленные ИИ-агентом по кросс-табличным связям.</p>
         </div>
         <div class="rec-card">
             <h4><i class="fas fa-check-double"></i> Валидация</h4>
-            <p>Внедрите маску ввода (+7-XXX-XXX-XX-XX) для предотвращения некорректных форматов в базе HR.</p>
-        </div>
-        <div class="rec-card">
-            <h4><i class="fas fa-sync"></i> Синхронизация</h4>
-            <p>Обнаружено расхождение дат в ERP и Архиве. Настройте ежедневную автоматическую сверку в 00:00.</p>
+            <p>Внедрите автоматические маски ограничений для полей, где зафиксирован статус "Критично".</p>
         </div>
     </div>
 </main>
 
 <script>
-    // Инициализация фиксированного графика Chart.js
-    const ctx = document.getElementById('qualityChart').getContext('2d');
-    const qualityChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Высокое', 'Среднее', 'Критическое'],
-            datasets: [{
-                data: [1, 1, 2],
-                backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true, /* Защита от бесконечного растягивания вниз */
-            plugins: { 
-                legend: { 
-                    position: 'bottom',
-                    labels: { boxWidth: 12, font: { size: 11 } }
-                } 
-            }
-        }
-    });
+    let qualityChart;
 
-    // Функция фильтрации таблицы (Все / Ошибки)
-    function filterTable(status, btn) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    // Инициализация графика
+    window.onload = function() {
+        const ctx = document.getElementById('qualityChart').getContext('2d');
+        qualityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Норма / Отлично', 'Критично / Ошибки'],
+                datasets: [{
+                    data: [0, 0], // Будет заполнено функцией пересчета
+                    backgroundColor: ['#1abc9c', '#e74c3c'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+            }
+        });
+        
+        // Первичный расчет данных из таблицы в график
+        updateChartFromTable();
+    };
+
+    // ФУНКЦИЯ СВЯЗИ: Пересчитывает строки и обновляет график
+    function updateChartFromTable() {
+        let goodCount = 0;
+        let badCount = 0;
 
         const rows = document.querySelectorAll('#dataTable tbody tr');
         rows.forEach(row => {
-            if (status === 'all') {
-                row.style.display = '';
-            } else {
-                row.style.display = row.getAttribute('data-status') === status ? '' : 'none';
-            }
+            const status = row.getAttribute('data-status');
+            if (status === 'good') goodCount++;
+            if (status === 'bad') badCount++;
+        });
+
+        // Передаем новые данные в Chart.js и обновляем его
+        qualityChart.data.datasets[0].data = [goodCount, badCount];
+        qualityChart.update();
+    }
+
+    // Изменение статуса через выпадающий список в строке
+    function updateRowStatus(selectElem) {
+        const row = selectElem.closest('tr');
+        row.setAttribute('data-status', selectElem.value);
+        updateChartFromTable();
+    }
+
+    // Удаление строки таблицы
+    function deleteRow(buttonElem) {
+        const row = buttonElem.closest('tr');
+        row.remove();
+        updateChartFromTable();
+    }
+
+    // Добавление новой строки
+    function addNewRow() {
+        const system = document.getElementById('newSystem').value.trim();
+        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '100%';
+        const status = document.getElementById('newStatus').value;
+
+        if (!system) {
+            alert('Пожалуйста, введите название системы!');
+            return;
+        }
+
+        const tbody = document.querySelector('#dataTable tbody');
+        const newTr = document.createElement('tr');
+        newTr.setAttribute('data-status', status);
+
+        newTr.innerHTML = `
+            <td contenteditable="true" oninput="updateChartFromTable()">${system}</td>
+            <td contenteditable="true" oninput="updateChartFromTable()">${completeness}</td>
+            <td contenteditable="true" oninput="updateChartFromTable()">${accuracy}</td>
+            <td>
+                <select onchange="updateRowStatus(this)">
+                    <option value="good" ${status === 'good' ? 'selected' : ''}>Отлично / Норма</option>
+                    <option value="bad" ${status === 'bad' ? 'selected' : ''}>Критично / Ошибки</option>
+                </select>
+            </td>
+            <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
+        `;
+
+        tbody.appendChild(newTr);
+        updateChartFromTable();
+
+        // Очищаем поля ввода
+        document.getElementById('newSystem').value = '';
+        document.getElementById('newCompleteness').value = '';
+        document.getElementById('newAccuracy').value = '';
+    }
+
+    // Фильтр таблицы
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        rows.forEach(row => {
+            if (status === 'all') row.style.display = '';
+            else row.style.display = row.getAttribute('data-status') === status ? '' : 'none';
         });
     }
 
-    // Логика работы ИИ-агента с прогресс-баром
+    // Логика работы ИИ-агента
     function startAdvancedAnalysis() {
         const btn = document.getElementById('aiBtn');
         const progCont = document.getElementById('progCont');
@@ -264,31 +340,26 @@
         const output = document.getElementById('aiOutput');
         const recCards = document.getElementById('recCards');
 
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        progCont.style.display = "block";
-        output.style.display = "block";
-        recCards.style.display = "none";
+        btn.disabled = true; btn.style.opacity = "0.5";
+        progCont.style.display = "block"; output.style.display = "block"; recCards.style.display = "none";
 
         let progress = 0;
         const interval = setInterval(() => {
-            progress += Math.random() * 15;
+            progress += Math.random() * 20;
             if (progress > 100) progress = 100;
-            
             progBar.style.width = progress + "%";
             
-            if (progress < 30) output.innerText = "> [SCANNING]: Проверка целостности связей датасетов...";
-            else if (progress < 60) output.innerText = "> [AI LOGIC]: Поиск аномалий в строковых значениях и NULL-полях...";
-            else if (progress < 90) output.innerText = "> [AI LOGIC]: Формирование пула рекомендаций по оптимизации...";
-            else output.innerText = "> [COMPLETE]: Анализ успешно завершен. Отчет передан на панель.";
+            if (progress < 40) output.innerText = "> [SCANNING]: Считывание пользовательских изменений...";
+            else if (progress < 80) output.innerText = "> [AI LOGIC]: Пересчет весов по новым наборам данных...";
+            else output.innerText = "> [COMPLETE]: Оптимальные паттерны выведены.";
 
             if (progress >= 100) {
                 clearInterval(interval);
-                status.innerText = "Анализ завершен успешно!";
+                status.innerText = "Динамический аудит завершен!";
                 recCards.style.display = "grid";
                 btn.innerHTML = "<i class='fas fa-check'></i> Аудит выполнен";
             }
-        }, 300);
+        }, 250);
     }
 </script>
 
