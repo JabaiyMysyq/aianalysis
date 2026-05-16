@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анализ данных | DataQuality</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="dashboard.html" class="active">Анализ данных</a>
+            <a href="bot.html">Помощник по качеству</a>
+            <a href="creators.html">Авторы</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h2><i class="fas fa-database"></i> Метрики качества текущих баз данных</h2>
+    <p>В интерактивной таблице ниже приведены результаты автоматического аудита информационных систем организации.</p>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Набор данных (Dataset)</th>
+                    <th>Полнота (Completeness)</th>
+                    <th>Точность (Accuracy)</th>
+                    <th>Статус качества</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td>База клиентов (CRM)</td>
+                    <td>94%</td>
+                    <td>88%</td>
+                    <td><span class="status-badge status-good">Удовлетворительно</span></td>
+                </tr>
+                <tr>
+                    <td>Финансовые отчеты (2025)</td>
+                    <td>99%</td>
+                    <td>97%</td>
+                    <td><span class="status-badge status-good">Высокий уровень</span></td>
+                </tr>
+                <tr>
+                    <td>Реестр сотрудников (HR)</td>
+                    <td>72%</td>
+                    <td>65%</td>
+                    <td><span class="status-badge status-bad">Критический уровень</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <section class="ai-agent-section" style="background: #eef2f7; padding: 25px; border-radius: 10px; margin-top: 30px;">
+        <h3><i class="fas fa-magic"></i> AI-Агент Статистики</h3>
+        <p>Запустите анализ, чтобы интеллектуальный агент обработал метрики таблицы и вывел аналитическое резюме вместе с мотивационным тезисом.</p>
+        <button onclick="runAgent()" style="padding:12px 20px; background:#2c3e50; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">
+            <i class="fas fa-cogs"></i> Обработать данные агентом
+        </button>
+        
+        <div id="agentResult" style="margin-top:20px; font-style:italic; color:#34495e; padding-left:15px; border-left:4px solid #1abc9c; display:none;">
+            </div>
+    </section>
+</main>
+
+<script>
+function runAgent() {
+    const resultDiv = document.getElementById('agentResult');
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = "Агент рассчитывает показатели... <i class='fas fa-spinner fa-spin'></i>";
+    
+    setTimeout(() => {
+        resultDiv.innerHTML = `
+            <strong>Аналитическое заключение ИИ:</strong> Средний показатель полноты по исследуемым системам составляет <strong>88.3%</strong>. 
+            Наибольшие уязвимости зафиксированы в <em>Реестре сотрудников (HR)</em>, где точность упала до 65%. Требуется немедленная нормализация полей. <br><br>
+            <strong>AI-Мотивация дня:</strong> "Качественные данные — фундамент успешных государственных стратегий. Очистив базу HR сегодня, мы исключаем управленческие ошибки завтра. Вперед к чистым данным!"
+        `;
+    }, 1500);
+}
+</script>
+
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
+
+</body>
+</html>

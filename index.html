@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>DataQuality | Главная</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html" class="active">Главная</a>
+            <a href="dashboard.html">Анализ данных</a>
+            <a href="bot.html">Помощник по качеству</a>
+            <a href="creators.html">Авторы</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <h1 style="font-size: 2.8rem; margin-bottom: 15px;">Анализ качества данных и выработка рекомендаций</h1>
+        <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">Точность решений в государственном и корпоративном управлении начинается с чистых и надежных данных.</p>
+    </section>
+
+    <section class="analytics-intro" style="margin-bottom: 40px;">
+        <h2><i class="fas fa-chart-line"></i> Актуальность проекта</h2>
+        <p>В эпоху цифровизации недостоверные, устаревшие или неполные данные (Data Quality) влекут за собой огромные издержки для организаций и государственных органов. Управление качеством данных — это непрерывный процесс обеспечения полноты, точности, непротиворечивости и доступности информации. Данный проект направлен на автоматизацию поиска ошибок в датасетах и генерацию интеллектуальных рекомендаций по их улучшению.</p>
+    </section>
+
+    <section class="media-section">
+        <h2><i class="fas fa-brain"></i> Мультимедийные компоненты ИИ</h2>
+        <div class="media-container">
+            
+            <div class="media-card">
+                <h3><i class="fas fa-video"></i> Презентация от AI-Аватара</h3>
+                <div style="position:relative;padding-top:56.25%; background:#e2e8f0; border-radius:8px; overflow:hidden;">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>
+                </div>
+                <p style="font-size:0.85rem; color:#666; margin-top:10px;">Цифровой аватар, созданный с помощью нейросетей, кратко объясняет цели нашего ИКТ-проекта.</p>
+            </div>
+
+            <div class="media-card">
+                <h3><i class="fas fa-music"></i> Фоновое аудио от ИИ</h3>
+                <p>Эмбиент-трек для концентрации, сгенерированный нейросетью (Suno AI / Mubert).</p>
+                <div class="audio-controls">
+                    <audio id="bgMusic" loop style="width: 100%;">
+                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                        Ваш браузер не поддерживает аудио.
+                    </audio>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button onclick="document.getElementById('bgMusic').play()" style="padding:5px 10px; cursor:pointer;"><i class="fas fa-play"></i> Включить</button>
+                        <button onclick="document.getElementById('bgMusic').pause()" style="padding:5px 10px; cursor:pointer;"><i class="fas fa-pause"></i> Пауза</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
+
+</body>
+</html>

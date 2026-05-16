@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Помощник по качеству | DataQuality</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        #chat-box { 
+            border: 1px solid #e2e8f0; padding: 20px; height: 350px; margin-bottom: 15px; 
+            background: #fff; overflow-y: auto; border-radius: 10px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; }
+        .user-msg { background: #1abc9c; color: white; align-self: flex-end; }
+        .bot-msg { background: #2c3e50; color: white; align-self: flex-start; }
+        .chat-input-area { display: flex; gap: 10px; }
+        #userInput { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; }
+        #sendBtn { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="dashboard.html">Анализ данных</a>
+            <a href="bot.html" class="active">Помощник по качеству</a>
+            <a href="creators.html">Авторы</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h2><i class="fas fa-robot"></i> Чат-бот Data Quality AI</h2>
+    <p>Задайте боту вопрос об очистке данных, метриках или методах улучшения качества (например: "Как улучшить данные?" или "Что такое валидация?").</p>
+    
+    <div id="chat-box">
+        <div class="msg bot-msg">Здравствуйте! Я ваш ИИ-консультант по Data Quality. Готов подсказать лучшие практики очистки баз данных и оптимизации информационных систем.</div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" id="userInput" placeholder="Введите ваш запрос сюда...">
+        <button id="sendBtn" onclick="askBot()">Отправить</button>
+    </div>
+</main>
+
+<script>
+async function askBot() {
+    const inputField = document.getElementById('userInput');
+    let userInput = inputField.value.trim();
+    const chatBox = document.getElementById('chat-box');
+
+    if (!userInput) return;
+
+    chatBox.innerHTML += `<div class="msg user-msg">${userInput}</div>`;
+    inputField.value = "";
+
+    const loadId = "load-" + Date.now();
+    chatBox.innerHTML += `<div class="msg bot-msg" id="${loadId}"><i class="fas fa-spinner fa-spin"></i> Экспертный анализ...</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    let query = userInput.toLowerCase();
+    
+    setTimeout(async () => {
+        const botMessageElem = document.getElementById(loadId);
+        
+        if(query.includes("улучшить") || query.includes("рекомендац") || query.includes("как")) {
+            botMessageElem.innerHTML = "<strong>Рекомендация эксперта:</strong> Для улучшения качества данных внедрите: 1. Валидацию на этапе ввода (ограничение масок полей); 2. Регулярную дедупликацию (склеивание повторов); 3. Автоматическую проверку пустых значений (NULL-значений).";
+        } else if (query.includes("валидация") || query.includes("проверк")) {
+            botMessageElem.innerHTML = "<strong>Определение:</strong> Валидация данных — это проверка информации на соответствие заданным критериям и правилам (например, проверка ИИН строго на 12 цифровых символов) перед сохранением в систему.";
+        } else {
+            // Обращение к русскому сегменту Wikipedia API для универсальности
+            try {
+                const res = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
+                const data = await res.json();
+                if(data.query.search.length > 0) {
+                    botMessageElem.innerHTML = `<strong>Найденный термин:</strong> ${data.query.search[0].snippet}... Для более детальной дорожной карты обратитесь к администратору данных.`;
+                } else {
+                    botMessageElem.innerHTML = "Извините, по данному аспекту архитектуры данных у меня нет готового паттерна. Попробуйте перефразировать вопрос.";
+                }
+            } catch(e) {
+                botMessageElem.innerHTML = "Сбой канала связи с глобальным архивом знаний.";
+            }
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+}
+
+document.getElementById('userInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') askBot();
+});
+</script>
+
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторы | DataQuality</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="dashboard.html">Анализ данных</a>
+            <a href="bot.html">Помощник по качеству</a>
+            <a href="creators.html" class="active">Авторы</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <h2 style="text-align: center; font-size: 2.3rem; margin-bottom: 40px;">Разработчики проекта</h2>
+    
+    <div class="creators-container">
+        <div class="creator-card">
+            <div class="profile-img">👨‍💻</div>
+            <h3>Баталбеков Нурали</h3>
+            <p style="color: #1abc9c; font-weight: bold; margin-bottom: 10px;">Lead Data Analyst</p>
+            <p style="font-size: 0.9rem; color:#555;">
+                Образовательная программа:<br>Государственное и местное управление<br>
+                <strong>Университет Нархоз</strong>
+            </p>
+            <div class="card-links">
+                <button class="btn-copy-email" onclick="copyEmail('nurali.batalbekov@narxoz.kz', this)">
+                    <i class="fas fa-envelope"></i> Email
+                </button>
+            </div>
+        </div>
+
+        <div class="creator-card">
+            <div class="profile-img">👩‍💻</div>
+            <h3>Сатыбалдина Дильназ</h3>
+            <p style="color: #1abc9c; font-weight: bold; margin-bottom: 10px;">UI/UX & AI Integration Expert</p>
+            <p style="font-size: 0.9rem; color:#555;">
+                Образовательная программа:<br>Государственное и местное управление<br>
+                <strong>Университет Нархоз</strong>
+            </p>
+            <div class="card-links">
+                <button class="btn-copy-email" onclick="copyEmail('dilnaz.satybaldina@narxoz.kz', this)">
+                    <i class="fas fa-envelope"></i> Email
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
+
+<script>
+function copyEmail(email, buttonElement) {
+    navigator.clipboard.writeText(email).then(() => {
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.classList.add('copied');
+        buttonElement.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+        setTimeout(() => {
+            buttonElement.classList.remove('copied');
+            buttonElement.innerHTML = originalHTML;
+        }, 2000);
+    }).catch(err => {
+        console.error('Ошибка буфера:', err);
+        alert("Email: " + email);
+    });
+}
+</script>
+
+</body>
+</html>
