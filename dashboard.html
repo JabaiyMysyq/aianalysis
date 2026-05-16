@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Общий контейнер-ограничитель для симметрии элементов */
+        /* Локальные стили для сетки и интерактивной таблицы */
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -16,146 +16,396 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 320px;
+            grid-template-columns: 1fr 340px;
             gap: 30px;
-            margin-top: 20px;
+            margin-top: 25px;
             align-items: start;
         }
 
-        @media (max-width: 900px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+        @media (max-width: 992px) {
+            .dashboard-grid { 
+                grid-template-columns: 1fr; 
+            }
         }
 
-        /* Полная перезапись стилей таблицы: белый фон и черный текст */
-        #dataTable {
+        /* Премиальная светлая таблица */
+        .white-data-table {
             background-color: #ffffff !important;
-            color: #000000 !important;
+            color: #0f172a !important;
             width: 100%;
             border-collapse: collapse;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
-        #dataTable th {
+        .white-data-table th {
             background-color: #1abc9c !important;
             color: #ffffff !important;
-            padding: 14px;
+            padding: 16px;
             font-weight: 600;
-            border: none;
             text-align: left;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
         }
 
-        #dataTable td {
-            color: #000000 !important;
+        .white-data-table td {
+            color: #0f172a !important;
             border-bottom: 1px solid #e2e8f0 !important;
-            border-left: none !important;
-            border-right: none !important;
-            padding: 12px 14px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
         }
 
-        /* Стили для редактируемых ячеек на светлом фоне */
+        /* Индикация редактируемых ячеек */
         td[contenteditable="true"] {
-            background-color: #fffdf0 !important;
-            color: #000000 !important;
+            background-color: #fffbeb !important;
+            box-shadow: inset 0 0 4px rgba(245, 158, 11, 0.1);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
+        
         td[contenteditable="true"]:focus {
             background-color: #ffffff !important;
             color: #000000 !important;
             outline: 2px solid #1abc9c !important;
+            box-shadow: 0 0 8px rgba(26, 188, 156, 0.2) !important;
         }
 
-        /* Живой график в контейнере */
-        .chart-container-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 320px;
-            height: 360px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .chart-container-box h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: #2c3e50; }
-
-        /* Панель добавления новых строк, подогнанная под размеры */
-        .add-row-form {
+        /* Контейнер живого графика */
+        .chart-glass-box {
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-top: 20px;
+            padding: 25px 20px;
+            border-radius: 16px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .add-row-form input {
-            padding: 10px 14px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+        .chart-glass-box h3 { 
+            margin: 0 0 20px 0; 
+            font-size: 1.15rem; 
             color: #fff;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
+            font-weight: 600;
         }
 
-        .add-row-form input:focus {
-            border-color: #1abc9c;
-        }
-
+        /* Кнопки действий */
         .btn-action {
             padding: 10px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+        
         .btn-add { background: #1abc9c; color: white; }
-        .btn-add:hover { background: #16a085; box-shadow: 0 0 12px rgba(26, 188, 156, 0.3); }
-        .btn-delete { background: #e74c3c; color: white; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
-        .btn-delete:hover { background: #c0392b; }
-        .btn-reset-table { background: #7f8c8d; color: white; margin-left: 10px; }
-        .btn-reset-table:hover { background: #95a5a6; }
+        .btn-add:hover { background: #16a085; box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3); }
+        
+        .btn-delete { background: rgba(231, 76, 60, 0.15); color: #ef4444; padding: 6px 12px; font-size: 0.85rem; border: 1px solid rgba(231, 76, 60, 0.2); }
+        .btn-delete:hover { background: #e74c3c; color: white; }
+        
+        .btn-reset-table { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); margin-left: 10px; }
+        .btn-reset-table:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
-        /* Статусы */
-        .badge-excellent { background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
-        .badge-normal { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
-        .badge-critical { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
+        /* Красивые статусы-бейджи */
+        .badge-excellent { background: #d1fae5; color: #065f46; padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-normal { background: #fef3c7; color: #92400e; padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-critical { background: #fee2e2; color: #991b1b; padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .ai-control-panel {
-            background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 15px; margin-top: 40px;
+        /* Кастомизация легенды Chart.js под темную тему */
+        .chart-glass-box canvas { max-width: 100%; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">DataQuality 📊</div>
+        <div class="menu">
+            <a href="index.html">Главная</a>
+            <a href="dashboard.html" class="active">Анализ данных</a>
+            <a href="bot.html">Помощник по качеству</a>
+            <a href="creators.html">Авторы</a>
+        </div>
+    </nav>
+</header>
+
+<main class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h2><i class="fas fa-tachometer-alt" style="color: #1abc9c;"></i> Автоматизированный ИИ-Дашборд</h2>
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <span style="font-size: 0.95rem; color: #94a3b8; margin-right: 5px;">Фильтр:</span>
+            <button class="filter-btn active" onclick="filterTable('all', this)">Все</button>
+            <button class="filter-btn" onclick="filterTable('bad', this)">Ошибки / Критично</button>
+            <button class="btn-action btn-reset-table" onclick="resetToDefaultData()"><i class="fas fa-undo"></i> Сбросить базу</button>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        
+        <div>
+            <div style="overflow-x: auto; border-radius: 12px;">
+                <table id="dataTable" class="white-data-table">
+                    <thead>
+                        <tr>
+                            <th>Система</th>
+                            <th>Полнота</th>
+                            <th>Точность</th>
+                            <th>Авто-Статус</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="add-row-form">
+                <input type="text" id="newSystem" placeholder="Название информационной системы" style="flex: 2; min-width: 200px;">
+                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 95%)" style="flex: 1; min-width: 120px;">
+                <input type="text" id="newAccuracy" placeholder="Точность (напр. 90%)" style="flex: 1; min-width: 120px;">
+                <button class="btn-action btn-add" onclick="addNewRow()"><i class="fas fa-plus"></i> Добавить</button>
+            </div>
+        </div>
+
+        <div class="chart-glass-box">
+            <h3>Живой график качества</h3>
+            <div style="position: relative; width: 100%; height: 260px; display: flex; justify-content: center;">
+                <canvas id="qualityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <section class="ai-control-panel">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h3 style="color: #fff;"><i class="fas fa-microchip" style="color: #1abc9c;"></i> Аналитический ИИ-Агент</h3>
+                <p id="agentStatus" style="margin: 8px 0 0 0; color: #94a3b8; font-size: 0.95rem;">Готов к сканированию бизнес-метрик и поиску скрытых аномалий в репозиториях...</p>
+            </div>
+            <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding: 14px 28px; background: #1abc9c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px;">
+                <i class="fas fa-play"></i> Запустить ИИ-аудит
+            </button>
+        </div>
+        
+        <div class="progress-container" id="progCont">
+            <div class="progress-bar" id="progBar"></div>
+        </div>
+        
+        <div id="aiOutput" style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 0.9rem; color: #1abc9c; display: none; background: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 6px; border: 1px solid rgba(26, 188, 156, 0.2);"></div>
+        
+        <div class="ai-report-box" id="aiReportBox"></div>
+    </section>
+</main>
+
+<script>
+    let qualityChart;
+
+    // Начальные дефолтные академические данные
+    const defaultData = [
+        { system: "CRM Система", completeness: "94%", accuracy: "88%" },
+        { system: "Бухгалтерия (ERP)", completeness: "99%", accuracy: "97%" },
+        { system: "Кадровый учет (HR)", completeness: "72%", accuracy: "65%" }
+    ];
+
+    window.onload = function() {
+        // Настройка стилей шрифта Chart.js под темную тему
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Segoe UI', Roboto, sans-serif";
+
+        const ctx = document.getElementById('qualityChart').getContext('2d');
+        qualityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Отлично (>=95%)', 'Норма (80-94%)', 'Критично (<80%)'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            boxWidth: 12, 
+                            padding: 15,
+                            font: { size: 12 } 
+                        } 
+                    } 
+                }
+            }
+        });
+        
+        loadTableData();
+    };
+
+    // Сохранение в LocalStorage
+    function saveTableToStorage() {
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        let tableArr = [];
+        
+        rows.forEach(row => {
+            tableArr.push({
+                system: row.cells[0].innerText,
+                completeness: row.cells[1].innerText,
+                accuracy: row.cells[2].innerText
+            });
+        });
+        
+        localStorage.setItem('dqTableData', JSON.stringify(tableArr));
+    }
+
+    // Рендеринг таблицы из кэша браузера
+    function loadTableData() {
+        let storedData = localStorage.getItem('dqTableData');
+        let dataToRender = storedData ? JSON.parse(storedData) : defaultData;
+        
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        dataToRender.forEach(item => {
+            const newTr = document.createElement('tr');
+            newTr.innerHTML = `
+                <td contenteditable="true" oninput="handleTableChange()">${item.system}</td>
+                <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${item.completeness}</td>
+                <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${item.accuracy}</td>
+                <td class="status-cell"></td>
+                <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            tbody.appendChild(newTr);
+        });
+        
+        calculateStatuses();
+    }
+
+    // Сброс данных
+    function resetToDefaultData() {
+        if(confirm("Вы действительно хотите сбросить таблицу к первоначальным данным?")) {
+            localStorage.removeItem('dqTableData');
+            loadTableData();
+            resetAiButtonState();
+        }
+    }
+
+    function handleTableChange() {
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    // Расчет бейджей статусов и секторов графика
+    function calculateStatuses() {
+        let excellentCount = 0;
+        let normalCount = 0;
+        let criticalCount = 0;
+
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        
+        rows.forEach(row => {
+            const accuracyCell = row.querySelector('.accuracy-cell');
+            const statusCell = row.querySelector('.status-cell');
+            
+            let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
+
+            if (accuracyValue >= 95) {
+                statusCell.innerHTML = `<span class="badge-excellent">Отлично</span>`;
+                row.setAttribute('data-status', 'excellent');
+                excellentCount++;
+            } else if (accuracyValue >= 80 && accuracyValue < 95) {
+                statusCell.innerHTML = `<span class="badge-normal">Норма</span>`;
+                row.setAttribute('data-status', 'normal');
+                normalCount++;
+            } else {
+                statusCell.innerHTML = `<span class="badge-critical">Критично</span>`;
+                row.setAttribute('data-status', 'bad');
+                criticalCount++;
+            }
+        });
+
+        if (qualityChart) {
+            qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
+            qualityChart.update();
+        }
+    }
+
+    function deleteRow(buttonElem) {
+        buttonElem.closest('tr').remove();
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    // Функция добавления новой записи
+    function addNewRow() {
+        const system = document.getElementById('newSystem').value.trim();
+        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
+
+        if (!system) {
+            alert('Пожалуйста, укажите название информационной системы!');
+            return;
         }
 
-        .progress-container {
-            width: 100%; background: #34495e; height: 10px; border-radius: 5px; margin: 20px 0; display: none;
-        }
+        const tbody = document.getElementById('tableBody');
+        const newTr = document.createElement('tr');
 
-        .progress-bar { width: 0%; height: 100%; background: #1abc9c; border-radius: 5px; transition: width 0.1s; }
+        newTr.innerHTML = `
+            <td contenteditable="true" oninput="handleTableChange()">${system}</td>
+            <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${completeness}</td>
+            <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${accuracy}</td>
+            <td class="status-cell"></td>
+            <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+        `;
 
-        .ai-report-box {
-            background: #1e293b;
-            border-left: 5px solid #1abc9c;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-            display: none;
-            color: #ecf0f1;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        tbody.appendChild(newTr);
+        
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+
+        document.getElementById('newSystem').value = '';
+        document.getElementById('newCompleteness').value = '';
+        document.getElementById('newAccuracy').value = '';
+    }
+
+    function resetAiButtonState() {
+        const btn = document.getElementById('aiBtn');
+        const statusText = document.getElementById('agentStatus');
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerHTML = "<i class='fas fa-play'></i> Запустить ИИ-аудит";
+        statusText.innerText = "Таблица обновлена. ИИ готов к повторному анализу бизнес-метрик...";
+    }
+
+    // Фильтрация отображения строк таблицы
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        rows.forEach(row => {
+            if (status === 'all') row.style.display = '';
+            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
+        });
+    }
+
+    // Логика симуляции работы ИИ-агента и генерации аналитической записки
+    function startAdvancedAnalysis() {
+        const btn = document.getElementById('aiBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+        const statusText = document.getElementById('agentStatus');
+        const output = document.getElementById('aiOutput');
+        const reportBox = document.getElementById('aiReportBox');
+
+        btn.
