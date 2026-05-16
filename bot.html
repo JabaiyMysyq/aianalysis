@@ -6,132 +6,17 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .chat-wrapper {
-            max-width: 800px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            height: 600px;
+        #chat-box { 
+            border: 1px solid #e2e8f0; padding: 20px; height: 350px; margin-bottom: 15px; 
+            background: #fff; overflow-y: auto; border-radius: 10px;
+            display: flex; flex-direction: column; gap: 12px;
         }
-
-        .chat-header {
-            background: #1a252f;
-            color: white;
-            padding: 20px;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .chat-header .status-dot {
-            width: 10px;
-            height: 10px;
-            background: #1abc9c;
-            border-radius: 5px;
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .message {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .message.bot {
-            background: white;
-            color: #2c3e50;
-            align-self: flex-start;
-            border-left: 4px solid #1abc9c;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .message.user {
-            background: #1abc9c;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-
-        .chat-input-area {
-            padding: 15px;
-            background: white;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            gap: 10px;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .chat-input-area input:focus { border-color: #1abc9c; }
-
-        .chat-input-area button {
-            background: #1abc9c;
-            color: white;
-            border: none;
-            padding: 0 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .chat-input-area button:hover { background: #16a085; }
-
-        .suggested-hints {
-            display: flex;
-            gap: 10px;
-            padding: 0 20px 15px 20px;
-            background: #f8fafc;
-            flex-wrap: wrap;
-        }
-
-        .hint-btn {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .hint-btn:hover { background: #cbd5e1; color: #1e293b; }
-
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
-        }
+        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; }
+        .user-msg { background: #1abc9c; color: white; align-self: flex-end; }
+        .bot-msg { background: #2c3e50; color: white; align-self: flex-start; }
+        .chat-input-area { display: flex; gap: 10px; }
+        #userInput { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; }
+        #sendBtn { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -142,115 +27,81 @@
         <div class="menu">
             <a href="index.html">Главная</a>
             <a href="dashboard.html">Анализ данных</a>
-            <a href="bot.html" class="active">Помощник по качестве</a>
+            <a href="bot.html" class="active">Помощник по качеству</a>
             <a href="creators.html">Авторы</a>
         </div>
     </nav>
 </header>
 
 <main>
-    <div style="text-align: center; margin-top: 20px;">
-        <h2><i class="fas fa-robot"></i> Помощник по качеству данных</h2>
-        <p style="color: #666;">Интеллектуальный агент ИКТ-системы</p>
+    <h2><i class="fas fa-robot"></i> Чат-бот Data Quality AI</h2>
+    <p>Задайте боту вопрос об очистке данных, метриках или методах улучшения качества (например: "Как улучшить данные?" или "Что такое валидация?").</p>
+    
+    <div id="chat-box">
+        <div class="msg bot-msg">Здравствуйте! Я ваш ИИ-консультант по Data Quality. Готов подсказать лучшие практики очистки баз данных и оптимизации информационных систем.</div>
     </div>
 
-    <div class="chat-wrapper">
-        <div class="chat-header">
-            <div class="status-dot"></div>
-            <div>
-                <strong>DataQuality AI Agent</strong>
-                <div style="font-size: 0.75rem; color: #bdc3c7;">Модель: Сквозной аудит ИКТ</div>
-            </div>
-        </div>
-
-        <div class="chat-messages" id="chatWindow">
-            <div class="message bot">
-                Приветствую! Я виртуальный ассистент DataQuality. Я помогу вам разобраться с базовыми понятиями обеспечения качества данных (Data Quality) в информационных системах.
-                <br><br>
-                Нажмите на одну из подсказок внизу или введите свой вопрос!
-            </div>
-        </div>
-
-        <div class="suggested-hints">
-            <button class="hint-btn" onclick="useHint('Зачем нужно качество данных?')">Зачем нужно качество данных?</button>
-            <button class="hint-btn" onclick="useHint('Что такое полнота?')">What is completeness?</button>
-            <button class="hint-btn" onclick="useHint('Что такое валидация?')">What is validation?</button>
-            <button class="hint-btn" onclick="useHint('Что важнее?')">Что важнее?</button>
-        </div>
-
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Введите ваш вопрос здесь..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-        </div>
+    <div class="chat-input-area">
+        <input type="text" id="userInput" placeholder="Введите ваш запрос сюда...">
+        <button id="sendBtn" onclick="askBot()">Отправить</button>
     </div>
 </main>
 
 <script>
-    // Первоначальная база ответов
-    const answers = {
-        "зачем нужно качество данных?": "<b>Качество данных</b> необходимо для принятия правильных управленческих решений. Ошибки в базах данных (дубликаты, пропуски) приводят к неверным отчетам, финансовым потерям компании и сбоям в автоматизации бизнес-процессов.",
-        
-        "что такое полнота?": "<b>Полнота (Completeness)</b> показывает, все ли обязательные сведения собраны в системе. Если в базе данных CRM или кадрового учета у половины сотрудников не заполнены ИИН или номера телефонов — полнота системы будет всего 50%. Это мешает автоматизации процессов.",
-        
-        "что такое валидация?": "Для исправления ошибок менеджмент должен внедрить три шага:<br>1. <b>Маски ввода</b> на сайтах и в программах (например, запретить вводить буквы в поле телефона).<br>2. <b>Автоматическую дедупликацию</b> (скрипты, удаляющие повторы по совпадению ИИН).<br>3. <b>Кросс-валидацию</b> — сверку данных между разными ведомствами в реальном времени.",
-        
-        "что важнее?": "Для эффективного менеджмента важен баланс. Но с точки зрения аналитики, высокая полнота при нулевой точности (когда все поля заполнены случайным или неверным текстом) абсолютно бесполезна и даже опасна, так как ведет к неверным экономическим выводам."
-    };
+async function askBot() {
+    const inputField = document.getElementById('userInput');
+    let userInput = inputField.value.trim();
+    const chatBox = document.getElementById('chat-box');
 
-    function sendMessage() {
-        const inputField = document.getElementById("userInput");
-        const text = inputField.value.trim();
+    if (!userInput) return;
+
+    chatBox.innerHTML += `<div class="msg user-msg">${userInput}</div>`;
+    inputField.value = "";
+
+    const loadId = "load-" + Date.now();
+    chatBox.innerHTML += `<div class="msg bot-msg" id="${loadId}"><i class="fas fa-spinner fa-spin"></i> Экспертный анализ...</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    let query = userInput.toLowerCase();
+    
+    setTimeout(async () => {
+        const botMessageElem = document.getElementById(loadId);
         
-        if (!text) return;
-
-        // Выводим сообщение пользователя
-        appendMessage(text, "user");
-        inputField.value = "";
-
-        // Ответ бота
-        setTimeout(() => {
-            const cleanText = text.toLowerCase().replace(/[?]/g, "").trim();
-            let botReply = "Извините, я настроен на ответы по ключевым метрикам ИКТ. Пожалуйста, воспользуйтесь кнопками-подсказками для демонстрации возможностей системы.";
-            
-            // Прямое сопоставление вопроса
-            if (answers[cleanText]) {
-                botReply = answers[cleanText];
-            } else {
-                // Если совпадение не полное, ищем по ключевым словам
-                for (let key in answers) {
-                    if (cleanText.includes("полнот") && key.includes("полнот")) {
-                        botReply = answers[key];
-                        break;
-                    }
-                    if (cleanText.includes("валидац") && key.includes("валидац")) {
-                        botReply = answers[key];
-                        break;
-                    }
-                    if (cleanText.includes("зачем") && key.includes("зачем")) {
-                        botReply = answers[key];
-                        break;
-                    }
-                    if (cleanText.includes("важн") && key.includes("важн")) {
-                        botReply = answers[key];
-                        break;
-                    }
+        if(query.includes("улучшить") || query.includes("рекомендац") || query.includes("как")) {
+            botMessageElem.innerHTML = "<strong>Рекомендация эксперта:</strong> Для улучшения качества данных внедрите: 1. Валидацию на этапе ввода (ограничение масок полей); 2. Регулярную дедупликацию (склеивание повторов); 3. Автоматическую проверку пустых значений (NULL-значений).";
+        } else if (query.includes("валидация") || query.includes("проверк")) {
+            botMessageElem.innerHTML = "<strong>Определение:</strong> Валидация данных — это проверка информации на соответствие заданным критериям и правилам (например, проверка ИИН строго на 12 цифровых символов) перед сохранением в систему.";
+        } else {
+            // Обращение к русскому сегменту Wikipedia API для универсальности
+            try {
+                const res = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
+                const data = await res.json();
+                if(data.query.search.length > 0) {
+                    botMessageElem.innerHTML = `<strong>Найденный термин:</strong> ${data.query.search[0].snippet}... Для более детальной дорожной карты обратитесь к администратору данных.`;
+                } else {
+                    botMessageElem.innerHTML = "Извините, по данному аспекту архитектуры данных у меня нет готового паттерна. Попробуйте перефразировать вопрос.";
                 }
+            } catch(e) {
+                botMessageElem.innerHTML = "Сбой канала связи с глобальным архивом знаний.";
             }
-            
-            appendMessage(botReply, "bot");
-        }, 300);
-    }
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+}
 
-    function appendMessage(text, sender) {
-        const chatWindow = document.getElementById("chatWindow");
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", sender);
-        messageDiv.innerHTML = text;
-        chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+document.getElementById('userInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') askBot();
+});
+</script>
 
-    function useHint(hintText) {
-        document.getElementById("userInput").value = hintText;
-        sendMessage();
-    }
+<footer>
+    <div class="footer-content">
+        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
+        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
+        <p>© 2026</p>
+        <button id="backToTop" onclick="window.scrollTo(0, 0)">↑ Наверх</button>
+    </div>
+</footer>
+
+</body>
+</html>
