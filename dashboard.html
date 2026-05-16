@@ -62,7 +62,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Стилизация интерактивного ввода */
+        /* Стилизация интерактивного ввода (как на вашем скриншоте) */
         .add-row-form-panel {
             background: rgba(30, 41, 59, 0.4);
             padding: 20px;
@@ -173,7 +173,7 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
 
@@ -212,8 +212,9 @@
 </main>
 
 <script>
-    let qualityChart = null;
+    let qualityChart;
 
+    // Исходные данные, если LocalStorage пуст
     const defaultData = [
         { system: "CRM Система", completeness: "94%", accuracy: "88%" },
         { system: "Бухгалтерия (ERP)", completeness: "99%", accuracy: "97%" },
@@ -249,9 +250,9 @@
         let tableArr = [];
         rows.forEach(row => {
             tableArr.push({
-                system: row.cells[0].innerText.trim(),
-                completeness: row.cells[1].innerText.trim(),
-                accuracy: row.cells[2].innerText.trim()
+                system: row.cells[0].innerText,
+                completeness: row.cells[1].innerText,
+                accuracy: row.cells[2].innerText
             });
         });
         localStorage.setItem('dqTableData', JSON.stringify(tableArr));
@@ -294,15 +295,15 @@
             let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
 
             if (accuracyValue >= 95) {
-                statusCell.innerHTML = '<span class="badge-excellent">Отлично</span>';
+                statusCell.innerHTML = `<span class="badge-excellent">Отлично</span>`;
                 row.setAttribute('data-status', 'excellent');
                 excellentCount++;
             } else if (accuracyValue >= 80 && accuracyValue < 95) {
-                statusCell.innerHTML = '<span class="badge-normal">Норма</span>';
+                statusCell.innerHTML = `<span class="badge-normal">Норма</span>`;
                 row.setAttribute('data-status', 'normal');
                 normalCount++;
             } else {
-                statusCell.innerHTML = '<span class="badge-critical">Критично</span>';
+                statusCell.innerHTML = `<span class="badge-critical">Критично</span>`;
                 row.setAttribute('data-status', 'bad');
                 criticalCount++;
             }
@@ -314,9 +315,94 @@
         }
     }
 
+    // ТА САМАЯ ФУНКЦИЯ ДОБАВЛЕНИЯ СТРОКИ
     function addNewRow() {
-        const systemInput = document.getElementById('newSystem');
-        const completenessInput = document.getElementById('newCompleteness');
-        const accuracyInput = document.getElementById('newAccuracy');
+        const system = document.getElementById('newSystem').value.trim();
+        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
+        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
 
-        const
+        if (!system) {
+            alert('Введите название системы!');
+            return;
+        }
+
+        const tbody = document.getElementById('tableBody');
+        const newTr = document.createElement('tr');
+        newTr.innerHTML = `
+            <td contenteditable="true" oninput="handleTableChange()">${system}</td>
+            <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${completeness}</td>
+            <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${accuracy}</td>
+            <td class="status-cell"></td>
+            <td><button class="btn-action btn-delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+        `;
+        tbody.appendChild(newTr);
+        
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+
+        // Очищаем поля ввода
+        document.getElementById('newSystem').value = '';
+        document.getElementById('newCompleteness').value = '';
+        document.getElementById('newAccuracy').value = '';
+    }
+
+    function deleteRow(buttonElem) {
+        buttonElem.closest('tr').remove();
+        saveTableToStorage();
+        calculateStatuses();
+        resetAiButtonState();
+    }
+
+    function resetToDefaultData() {
+        if(confirm("Восстановить базовые три строки данных?")) {
+            localStorage.removeItem('dqTableData');
+            loadTableData();
+            resetAiButtonState();
+        }
+    }
+
+    function resetAiButtonState() {
+        document.getElementById('aiBtn').disabled = false;
+        document.getElementById('aiBtn').style.opacity = "1";
+        document.getElementById('agentStatus').innerText = "Данные изменены. ИИ готов к перерасчету...";
+    }
+
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('#dataTable tbody tr').forEach(row => {
+            if (status === 'all') row.style.display = '';
+            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
+        });
+    }
+
+    function startAdvancedAnalysis() {
+        const btn = document.getElementById('aiBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+        const output = document.getElementById('aiOutput');
+        const reportBox = document.getElementById('aiReportBox');
+
+        btn.disabled = true; btn.style.opacity = "0.5";
+        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 20;
+            progBar.style.width = progress + "%";
+            output.innerText = `> [SCANNING_METRICS]... Вычисление коэффициентов качества: ${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                output.innerText = `> [COMPLETE]: Анализ успешно завершен.`;
+                reportBox.innerHTML = "<h4><i class='fas fa-file-medical-alt'></i> Экспертная записка ИИ-Агента</h4><p>Аудит зафиксировал обновление операционных метрик систем. Баланс точности и полноты находится в пределах допустимой ИКТ-нормы.</p>";
+                reportBox.style.display = "block";
+                btn.disabled = false; btn.style.opacity = "1";
+            }
+        }, 150);
+    }
+</script>
+
+</body>
+</html>
