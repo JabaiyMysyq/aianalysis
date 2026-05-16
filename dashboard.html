@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Общий контейнер-ограничитель для симметрии элементов */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 320px;
@@ -19,6 +26,48 @@
             .dashboard-grid { grid-template-columns: 1fr; }
         }
 
+        /* Полная перезапись стилей таблицы: белый фон и черный текст */
+        #dataTable {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #dataTable th {
+            background-color: #1abc9c !important;
+            color: #ffffff !important;
+            padding: 14px;
+            font-weight: 600;
+            border: none;
+            text-align: left;
+        }
+
+        #dataTable td {
+            color: #000000 !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            border-left: none !important;
+            border-right: none !important;
+            padding: 12px 14px;
+        }
+
+        /* Стили для редактируемых ячеек на светлом фоне */
+        td[contenteditable="true"] {
+            background-color: #fffdf0 !important;
+            color: #000000 !important;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        td[contenteditable="true"]:focus {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            outline: 2px solid #1abc9c !important;
+        }
+
+        /* Живой график в контейнере */
         .chart-container-box {
             background: white;
             padding: 20px;
@@ -37,58 +86,59 @@
 
         .chart-container-box h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: #2c3e50; }
 
-        /* Форма добавления новых строк */
+        /* Панель добавления новых строк, подогнанная под размеры */
         .add-row-form {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            margin-top: 15px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 20px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .add-row-form input {
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
             font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-row-form input:focus {
+            border-color: #1abc9c;
         }
 
         .btn-action {
-            padding: 8px 12px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
         }
         .btn-add { background: #1abc9c; color: white; }
-        .btn-add:hover { background: #16a085; }
-        .btn-delete { background: #e74c3c; color: white; padding: 4px 8px; font-size: 0.85rem; }
+        .btn-add:hover { background: #16a085; box-shadow: 0 0 12px rgba(26, 188, 156, 0.3); }
+        .btn-delete { background: #e74c3c; color: white; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
         .btn-delete:hover { background: #c0392b; }
         .btn-reset-table { background: #7f8c8d; color: white; margin-left: 10px; }
         .btn-reset-table:hover { background: #95a5a6; }
 
-        /* Стили для редактируемых ячеек */
-        td[contenteditable="true"] {
-            background-color: #fffdec;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        td[contenteditable="true"]:focus {
-            background-color: #fff;
-            outline: 2px solid #1abc9c;
-        }
-
-        /* Кастомные статусы для авторасчета */
+        /* Статусы */
         .badge-excellent { background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
         .badge-normal { background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
         .badge-critical { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
 
         .ai-control-panel {
-            background: #1a252f; color: white; padding: 30px; border-radius: 15px; margin-top: 40px;
+            background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 15px; margin-top: 40px;
         }
 
         .progress-container {
@@ -97,385 +147,15 @@
 
         .progress-bar { width: 0%; height: 100%; background: #1abc9c; border-radius: 5px; transition: width 0.1s; }
 
-        /* Контейнер детального аналитического отчета ИИ */
         .ai-report-box {
-            background: #2c3e50;
+            background: #1e293b;
             border-left: 5px solid #1abc9c;
             padding: 20px;
             margin-top: 20px;
             border-radius: 8px;
             display: none;
             color: #ecf0f1;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
-        .ai-report-box h4 { margin-top: 0; color: #1abc9c; font-size: 1.1rem; }
-        .ai-report-box p { margin: 8px 0; font-size: 0.95rem; }
-        .ai-report-box ul { margin: 5px 0 0 20px; padding: 0; }
-        .ai-report-box li { margin-bottom: 5px; font-size: 0.9rem; }
-
-        .filter-btn {
-            padding: 8px 15px; border: 1px solid #1abc9c; background: transparent; color: #1abc9c; cursor: pointer; border-radius: 5px; margin-right: 10px; transition: 0.3s; font-weight: bold;
-        }
-        .filter-btn.active, .filter-btn:hover { background: #1abc9c; color: white; }
-    </style>
-</head>
-<body>
-
-<header>
-    <nav>
-        <div class="logo">DataQuality 📊</div>
-        <div class="menu">
-            <a href="index.html">Главная</a>
-            <a href="dashboard.html" class="active">Анализ данных</a>
-            <a href="bot.html">Помощник по качеству</a>
-            <a href="creators.html">Авторы</a>
-        </div>
-    </nav>
-</header>
-
-<main>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-        <h2><i class="fas fa-tachometer-alt"></i> Автоматизированный ИИ-Дашборд</h2>
-        <div>
-            <span style="font-size: 0.9rem; color: #666;">Фильтр: </span>
-            <button class="filter-btn active" onclick="filterTable('all', this)">Все</button>
-            <button class="filter-btn" onclick="filterTable('bad', this)">Ошибки/Критично</button>
-            <button class="btn-action btn-reset-table" onclick="resetToDefaultData()"><i class="fas fa-undo"></i> Сбросить базу</button>
-        </div>
-    </div>
-
-    <div class="dashboard-grid">
-        <div>
-            <div class="table-container" style="margin: 0;">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Система</th>
-                            <th>Полнота (Клик для ред.)</th>
-                            <th>Точность (Клик для ред.)</th>
-                            <th>Авто-Статус</th>
-                            <th>Действие</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        </tbody>
-                </table>
-            </div>
-
-            <div class="add-row-form">
-                <input type="text" id="newSystem" placeholder="Название системы" style="flex: 2;">
-                <input type="text" id="newCompleteness" placeholder="Полнота (напр. 90%)" style="flex: 1;">
-                <input type="text" id="newAccuracy" placeholder="Точность (напр. 75%)" style="flex: 1;">
-                <button class="btn-action btn-add" onclick="addNewRow()"><i class="fas fa-plus"></i> Добавить</button>
-            </div>
-        </div>
-
-        <div class="chart-container-box">
-            <h3>Живой график качества</h3>
-            <canvas id="qualityChart"></canvas>
-        </div>
-    </div>
-
-    <section class="ai-control-panel">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
-            <div>
-                <h3><i class="fas fa-microchip"></i> Аналитический ИИ-Агент</h3>
-                <p id="agentStatus" style="margin: 5px 0 0 0; color: #bdc3c7;">Готов к сканированию бизнес-метрик и поиску скрытых аномалий...</p>
-            </div>
-            <button onclick="startAdvancedAnalysis()" id="aiBtn" style="padding:15px 25px; background:#1abc9c; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">
-                <i class="fas fa-play"></i> Запустить ИИ-аудит
-            </button>
-        </div>
-        
-        <div class="progress-container" id="progCont"><div class="progress-bar" id="progBar"></div></div>
-        <div id="aiOutput" style="margin-top:20px; font-family:'Courier New', monospace; font-size:0.9rem; color:#1abc9c; display:none;"></div>
-        
-        <div class="ai-report-box" id="aiReportBox"></div>
-    </section>
-</main>
-
-<script>
-    let qualityChart;
-
-    // Начальные дефолтные данные, если хранилище пустое
-    const defaultData = [
-        { system: "CRM Система", completeness: "94%", accuracy: "88%" },
-        { system: "Бухгалтерия (ERP)", completeness: "99%", accuracy: "97%" },
-        { system: "Кадровый учет (HR)", completeness: "72%", accuracy: "65%" }
-    ];
-
-    window.onload = function() {
-        // Инициализация графика Chart.js
-        const ctx = document.getElementById('qualityChart').getContext('2d');
-        qualityChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Отлично (>=95%)', 'Норма (80-94%)', 'Критично (<80%)'],
-                datasets: [{
-                    data: [0, 0, 0],
-                    backgroundColor: ['#1abc9c', '#f1c40f', '#e74c3c'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
-            }
-        });
-        
-        // Загрузка данных таблицы из LocalStorage или дефолтных
-        loadTableData();
-    };
-
-    // ФУНКЦИЯ СОХРАНЕНИЯ: Сохраняет текущую структуру таблицы в LocalStorage
-    function saveTableToStorage() {
-        const rows = document.querySelectorAll('#dataTable tbody tr');
-        let tableArr = [];
-        
-        rows.forEach(row => {
-            tableArr.push({
-                system: row.cells[0].innerText,
-                completeness: row.cells[1].innerText,
-                accuracy: row.cells[2].innerText
-            });
-        });
-        
-        localStorage.setItem('dqTableData', JSON.stringify(tableArr));
-    }
-
-    // ФУНКЦИЯ ЗАГРУЗКИ: Достает данные и строит HTML-строки
-    function loadTableData() {
-        let storedData = localStorage.getItem('dqTableData');
-        let dataToRender = storedData ? JSON.parse(storedData) : defaultData;
-        
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        
-        dataToRender.forEach(item => {
-            const newTr = document.createElement('tr');
-            newTr.innerHTML = `
-                <td contenteditable="true" oninput="handleTableChange()">${item.system}</td>
-                <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${item.completeness}</td>
-                <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${item.accuracy}</td>
-                <td class="status-cell"></td>
-                <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
-            `;
-            tbody.appendChild(newTr);
-        });
-        
-        calculateStatuses();
-    }
-
-    // Сброс таблицы к заводским настройкам (кнопка сверху)
-    function resetToDefaultData() {
-        if(confirm("Вы действительно хотите сбросить таблицу к первоначальным данным?")) {
-            localStorage.removeItem('dqTableData');
-            loadTableData();
-            resetAiButtonState(); // Сбрасываем и ИИ-агента тоже
-        }
-    }
-
-    // Обработчик любых ручных изменений в тексте ячеек
-    function handleTableChange() {
-        saveTableToStorage();
-        calculateStatuses();
-        resetAiButtonState(); // Важно: если данные изменились, разрешаем перевызов ИИ
-    }
-
-    // Парсинг процентов, простановка статусов и обновление графика
-    function calculateStatuses() {
-        let excellentCount = 0;
-        let normalCount = 0;
-        let criticalCount = 0;
-
-        const rows = document.querySelectorAll('#dataTable tbody tr');
-        
-        rows.forEach(row => {
-            const accuracyCell = row.querySelector('.accuracy-cell');
-            const statusCell = row.querySelector('.status-cell');
-            
-            let accuracyValue = parseInt(accuracyCell.innerText.replace(/[^0-9]/g, '')) || 0;
-
-            if (accuracyValue >= 95) {
-                statusCell.innerHTML = `<span class="badge-excellent">Отлично</span>`;
-                row.setAttribute('data-status', 'excellent');
-                excellentCount++;
-            } else if (accuracyValue >= 80 && accuracyValue < 95) {
-                statusCell.innerHTML = `<span class="badge-normal">Норма</span>`;
-                row.setAttribute('data-status', 'normal');
-                normalCount++;
-            } else {
-                statusCell.innerHTML = `<span class="badge-critical">Критично</span>`;
-                row.setAttribute('data-status', 'bad');
-                criticalCount++;
-            }
-        });
-
-        if (qualityChart) {
-            qualityChart.data.datasets[0].data = [excellentCount, normalCount, criticalCount];
-            qualityChart.update();
-        }
-    }
-
-    // Удаление строки
-    function deleteRow(buttonElem) {
-        buttonElem.closest('tr').remove();
-        saveTableToStorage();
-        calculateStatuses();
-        resetAiButtonState();
-    }
-
-    // Добавление новой строки
-    function addNewRow() {
-        const system = document.getElementById('newSystem').value.trim();
-        const completeness = document.getElementById('newCompleteness').value.trim() || '100%';
-        const accuracy = document.getElementById('newAccuracy').value.trim() || '0%';
-
-        if (!system) {
-            alert('Пожалуйста, укажите название информационной системы!');
-            return;
-        }
-
-        const tbody = document.getElementById('tableBody');
-        const newTr = document.createElement('tr');
-
-        newTr.innerHTML = `
-            <td contenteditable="true" oninput="handleTableChange()">${system}</td>
-            <td contenteditable="true" class="completeness-cell" oninput="handleTableChange()">${completeness}</td>
-            <td contenteditable="true" class="accuracy-cell" oninput="handleTableChange()">${accuracy}</td>
-            <td class="status-cell"></td>
-            <td><button class="btn-action btn-delete" onclick="deleteRow(this)">Удалить</button></td>
-        `;
-
-        tbody.appendChild(newTr);
-        
-        saveTableToStorage();
-        calculateStatuses();
-        resetAiButtonState();
-
-        document.getElementById('newSystem').value = '';
-        document.getElementById('newCompleteness').value = '';
-        document.getElementById('newAccuracy').value = '';
-    }
-
-    // Сброс визуального состояния кнопки ИИ в рабочее положение
-    function resetAiButtonState() {
-        const btn = document.getElementById('aiBtn');
-        const statusText = document.getElementById('agentStatus');
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.innerHTML = "<i class='fas fa-play'></i> Запустить ИИ-аудит";
-        statusText.innerText = "Таблица обновлена. Готов к повторному глубокому анализу...";
-    }
-
-    // Фильтр таблицы
-    function filterTable(status, btn) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const rows = document.querySelectorAll('#dataTable tbody tr');
-        rows.forEach(row => {
-            if (status === 'all') row.style.display = '';
-            else row.style.display = row.getAttribute('data-status') === 'bad' ? '' : 'none';
-        });
-    }
-
-    // ГЛУБОКИЙ АНАЛИЗ ДАННЫХ ИИ-АГЕНТОМ
-    function startAdvancedAnalysis() {
-        const btn = document.getElementById('aiBtn');
-        const progCont = document.getElementById('progCont');
-        const progBar = document.getElementById('progBar');
-        const statusText = document.getElementById('agentStatus');
-        const output = document.getElementById('aiOutput');
-        const reportBox = document.getElementById('aiReportBox');
-
-        btn.disabled = true; btn.style.opacity = "0.5";
-        progCont.style.display = "block"; output.style.display = "block"; reportBox.style.display = "none";
-
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 25;
-            if (progress > 100) progress = 100;
-            progBar.style.width = progress + "%";
-            
-            if (progress < 35) output.innerText = "> [SCANNING]: Извлечение новых весов из DOM-структуры...";
-            else if (progress < 70) output.innerText = "> [AI_LOGIC]: Расчет корреляции между обновленными Completeness и Accuracy...";
-            else output.innerText = "> [GENERATING REPORT]: Сборка новой аналитической записки...";
-
-            if (progress >= 100) {
-                clearInterval(interval);
-                
-                const rows = document.querySelectorAll('#dataTable tbody tr');
-                let totalRows = rows.length;
-                
-                if (totalRows === 0) {
-                    reportBox.innerHTML = "<h4>[ОТЧЕТ ИИ-АГЕНТА]: Таблица пуста. Загрузите данные для анализа.</h4>";
-                    reportBox.style.display = "block";
-                    btn.disabled = false; btn.style.opacity = "1";
-                    return;
-                }
-
-                let sumCompleteness = 0;
-                let sumAccuracy = 0;
-                let worstSystem = "";
-                let worstAccuracy = 101;
-                let worstCompleteness = 0;
-
-                rows.forEach(row => {
-                    const name = row.cells[0].innerText;
-                    const compVal = parseInt(row.querySelector('.completeness-cell').innerText.replace(/[^0-9]/g, '')) || 0;
-                    const accVal = parseInt(row.querySelector('.accuracy-cell').innerText.replace(/[^0-9]/g, '')) || 0;
-
-                    sumCompleteness += compVal;
-                    sumAccuracy += accVal;
-
-                    if (accVal < worstAccuracy) {
-                        worstAccuracy = accVal;
-                        worstCompleteness = compVal;
-                        worstSystem = name;
-                    }
-                });
-
-                let avgCompleteness = (sumCompleteness / totalRows).toFixed(1);
-                let avgAccuracy = (sumAccuracy / totalRows).toFixed(1);
-
-                reportBox.innerHTML = `
-                    <h4><i class="fas fa-file-medical-alt"></i> Сводный аналитический отчет ИИ-агента</h4>
-                    <p><strong>1. Общие показатели инфраструктуры:</strong></p>
-                    <ul>
-                        <li>Проанализировано информационных систем: <strong>${totalRows}</strong></li>
-                        <li>Средний уровень полноты (Completeness): <span style="color: #1abc9c;"><strong>${avgCompleteness}%</strong></span></li>
-                        <li>Средний уровень точности (Accuracy): <span style="color: #1abc9c;"><strong>${avgAccuracy}%</strong></span></li>
-                    </ul>
-                    <p style="margin-top: 15px;"><strong>2. Главная системная уязвимость:</strong></p>
-                    <p>Критическая зона обнаружена в источнике <strong>«${worstSystem}»</strong> (Точность: ${worstAccuracy}%, Полнота: ${worstCompleteness}%).</p>
-                    <p><em>Следствие для менеджмента:</em> Низкая точность данных в «${worstSystem}» на уровне ${worstAccuracy}% делает любые автоматические отчеты по этой системе компрометирующими и ведет к неверным управленческим решениям.</p>
-                    <p style="margin-top: 15px;"><strong>3. Предписания ИИ по стабилизации качества:</strong></p>
-                    <ul>
-                        <li>Для <strong>«${worstSystem}»</strong>: Немедленно развернуть скрипт дедупликации и верифицировать ИИН/контакты через государственные шлюзы.</li>
-                        <li>Для остальных систем: Настроить регулярный автоматический аудит пропущенных значений (NULL-значений) каждые 24 часа.</li>
-                    </ul>
-                `;
-
-                statusText.innerText = "Динамический аудит завершен по актуальным данным!";
-                reportBox.style.display = "block";
-                
-                // ВАЖНО: Разрешаем перезапуск аудита, делая кнопку снова активной
-                btn.disabled = false;
-                btn.style.opacity = "1";
-                btn.innerHTML = "<i class='fas fa-sync-alt'></i> Перезапустить ИИ-аудит";
-            }
-        }, 150);
-    }
-</script>
-
-<footer>
-    <div class="footer-content">
-        <p><strong>Баталбеков Н., Сатыбалдина Д. | Проект по ИКТ</strong></p>
-        <p>Университет Нархоз | ГИМУ и ШПиГҮ | Государственное и местное управление</p>
-        <p>© 2026</p>
-    </div>
-</footer>
-
-</body>
-</html>
