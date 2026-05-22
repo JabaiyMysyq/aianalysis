@@ -5,31 +5,38 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const { messages } = req.body;
+    try {
+        const { messages } = req.body;
 
-    const contents = messages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-    }));
+        const contents = messages.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+        }));
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                system_instruction: {
-                    parts: [{ text: `Ты — опытный консультант по качеству данных. Отвечай ТОЛЬКО на русском языке. Специализируешься на: очистке данных, дедупликации, валидации, метриках качества (полнота, точность, согласованность), Data Governance, ETL. Отвечай кратко и структурировано — не более 5 пунктов.` }]
-                },
-                contents
-            })
+        const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    system_instruction: {
+                        parts: [{ text: 'Ты — опытный консультант по качеству данных. Отвечай ТОЛЬКО на русском языке. Специализируешься на: очистке данных, дедупликации, валидации, метриках качества (полнота, точность, согласованность), Data Governance, ETL. Отвечай кратко и структурировано — не более 5 пунктов.' }]
+                    },
+                    contents
+                })
+            }
+        );
+
+        const data = await geminiRes.json();
+        
+        if (!geminiRes.ok) {
+            return res.status(500).json({ content: [{ type: 'text', text: 'Ошибка Gemini API: ' + JSON.stringify(data) }] });
         }
-    );
 
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Не удалось получить ответ.';
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Не удалось получить ответ.';
+        res.status(200).json({ content: [{ type: 'text', text }] });
 
-    res.status(200).json({
-        content: [{ type: 'text', text }]
-    });
+    } catch (err) {
+        res.status(500).json({ content: [{ type: 'text', text: 'Ошибка сервера: ' + err.message }] });
+    }
 }
