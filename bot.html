@@ -7,16 +7,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         #chat-box { 
-            border: 1px solid #e2e8f0; padding: 20px; height: 350px; margin-bottom: 15px; 
+            border: 1px solid #e2e8f0; padding: 20px; height: 420px; margin-bottom: 15px; 
             background: #fff; overflow-y: auto; border-radius: 10px;
             display: flex; flex-direction: column; gap: 12px;
         }
-        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; }
-        .user-msg { background: #1abc9c; color: white; align-self: flex-end; }
-        .bot-msg { background: #2c3e50; color: white; align-self: flex-start; }
+        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; line-height: 1.6; }
+        .msg .sender-label { font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; opacity: 0.75; display: block; }
+        .user-msg { background: #1abc9c; color: white; align-self: flex-end; border-radius: 10px 10px 3px 10px; }
+        .bot-msg { background: #2c3e50; color: white; align-self: flex-start; border-radius: 10px 10px 10px 3px; }
         .chat-input-area { display: flex; gap: 10px; }
-        #userInput { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; }
-        #sendBtn { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #userInput { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; }
+        #userInput:focus { border-color: #1abc9c; box-shadow: 0 0 0 3px rgba(26,188,156,0.15); }
+        #userInput:disabled { background: #f1f5f9; cursor: not-allowed; }
+        #sendBtn { padding: 10px 22px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: background 0.2s; }
+        #sendBtn:hover:not(:disabled) { background: #1abc9c; }
+        #sendBtn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .quick-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .quick-btn { padding: 6px 14px; background: #fff; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 0.82rem; color: #475569; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .quick-btn:hover { background: #1abc9c; color: white; border-color: #1abc9c; }
+        .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -35,62 +45,137 @@
 
 <main>
     <h2><i class="fas fa-robot"></i> Чат-бот Data Quality AI</h2>
-    <p>Задайте боту вопрос об очистке данных, метриках или методах улучшения качества (например: "Как улучшить данные?" или "Что такое валидация?").</p>
-    
+    <p>Задайте боту любой вопрос о качестве данных: очистка, дедупликация, валидация, метрики, аудит, управление данными и многое другое.</p>
+
     <div id="chat-box">
-        <div class="msg bot-msg">Здравствуйте! Я ваш ИИ-консультант по Data Quality. Готов подсказать лучшие практики очистки баз данных и оптимизации информационных систем.</div>
+        <div class="msg bot-msg">
+            <span class="sender-label">ИИ-консультант</span>
+            Здравствуйте! Я ваш ИИ-консультант по качеству данных. Задайте любой вопрос об очистке данных, дедупликации, валидации, метриках качества или управлении данными — я помогу разобраться.
+        </div>
     </div>
 
     <div class="chat-input-area">
-        <input type="text" id="userInput" placeholder="Введите ваш запрос сюда...">
-        <button id="sendBtn" onclick="askBot()">Отправить</button>
+        <input type="text" id="userInput" placeholder="Введите ваш вопрос сюда...">
+        <button id="sendBtn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i> Отправить
+        </button>
+    </div>
+
+    <div class="quick-btns">
+        <button class="quick-btn" onclick="quickAsk('Как улучшить качество данных?')">Как улучшить данные?</button>
+        <button class="quick-btn" onclick="quickAsk('Что такое дедупликация данных?')">Дедупликация</button>
+        <button class="quick-btn" onclick="quickAsk('Какие метрики качества данных существуют?')">Метрики качества</button>
+        <button class="quick-btn" onclick="quickAsk('Как провести аудит данных?')">Аудит данных</button>
+        <button class="quick-btn" onclick="quickAsk('Что такое Data Governance?')">Data Governance</button>
+        <button class="quick-btn" onclick="quickAsk('Как обнаружить и исправить ошибки в данных?')">Поиск ошибок</button>
     </div>
 </main>
 
 <script>
-async function askBot() {
-    const inputField = document.getElementById('userInput');
-    let userInput = inputField.value.trim();
-    const chatBox = document.getElementById('chat-box');
+let conversationHistory = [];
+let isLoading = false;
 
-    if (!userInput) return;
-
-    chatBox.innerHTML += `<div class="msg user-msg">${userInput}</div>`;
-    inputField.value = "";
-
-    const loadId = "load-" + Date.now();
-    chatBox.innerHTML += `<div class="msg bot-msg" id="${loadId}"><i class="fas fa-spinner fa-spin"></i> Экспертный анализ...</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    let query = userInput.toLowerCase();
-    
-    setTimeout(async () => {
-        const botMessageElem = document.getElementById(loadId);
-        
-        if(query.includes("улучшить") || query.includes("рекомендац") || query.includes("как")) {
-            botMessageElem.innerHTML = "<strong>Рекомендация эксперта:</strong> Для улучшения качества данных внедрите: 1. Валидацию на этапе ввода (ограничение масок полей); 2. Регулярную дедупликацию (склеивание повторов); 3. Автоматическую проверку пустых значений (NULL-значений).";
-        } else if (query.includes("валидация") || query.includes("проверк")) {
-            botMessageElem.innerHTML = "<strong>Определение:</strong> Валидация данных — это проверка информации на соответствие заданным критериям и правилам (например, проверка ИИН строго на 12 цифровых символов) перед сохранением в систему.";
-        } else {
-            // Обращение к русскому сегменту Wikipedia API для универсальности
-            try {
-                const res = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
-                const data = await res.json();
-                if(data.query.search.length > 0) {
-                    botMessageElem.innerHTML = `<strong>Найденный термин:</strong> ${data.query.search[0].snippet}... Для более детальной дорожной карты обратитесь к администратору данных.`;
-                } else {
-                    botMessageElem.innerHTML = "Извините, по данному аспекту архитектуры данных у меня нет готового паттерна. Попробуйте перефразировать вопрос.";
-                }
-            } catch(e) {
-                botMessageElem.innerHTML = "Сбой канала связи с глобальным архивом знаний.";
-            }
-        }
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1000);
+function quickAsk(text) {
+    document.getElementById('userInput').value = text;
+    sendMessage();
 }
 
-document.getElementById('userInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') askBot();
+function appendUserMessage(text) {
+    const chatBox = document.getElementById('chat-box');
+    const div = document.createElement('div');
+    div.className = 'msg user-msg';
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function appendBotMessage(text, isLoadingState) {
+    const chatBox = document.getElementById('chat-box');
+    const div = document.createElement('div');
+    div.className = 'msg bot-msg';
+
+    const label = document.createElement('span');
+    label.className = 'sender-label';
+    label.textContent = 'ИИ-консультант';
+
+    const content = document.createElement('span');
+    if (isLoadingState) {
+        content.innerHTML = '<span class="spinner"></span>Анализирую вопрос...';
+    } else {
+        content.textContent = text;
+    }
+
+    div.appendChild(label);
+    div.appendChild(content);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    return { div, content };
+}
+
+function setUILoading(state) {
+    isLoading = state;
+    const btn = document.getElementById('sendBtn');
+    const input = document.getElementById('userInput');
+    btn.disabled = state;
+    input.disabled = state;
+    btn.innerHTML = state
+        ? '<span class="spinner"></span> Обработка...'
+        : '<i class="fas fa-paper-plane"></i> Отправить';
+    document.querySelectorAll('.quick-btn').forEach(b => b.disabled = state);
+}
+
+async function sendMessage() {
+    if (isLoading) return;
+
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    appendUserMessage(text);
+    conversationHistory.push({ role: 'user', content: text });
+
+    setUILoading(true);
+    const { div: botDiv, content: botContent } = appendBotMessage('', true);
+
+    try {
+        const response = await fetch('https://aianalysis-roan.vercel.app/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: conversationHistory
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            botContent.textContent = 'Ошибка: ' + (data.error.message || 'Не удалось получить ответ. Попробуйте позже.');
+        } else {
+            const reply = data.content
+                .filter(block => block.type === 'text')
+                .map(block => block.text)
+                .join('');
+            botContent.textContent = reply;
+            conversationHistory.push({ role: 'assistant', content: reply });
+        }
+
+    } catch (err) {
+        botContent.textContent = 'Ошибка соединения с сервером. Проверьте подключение к интернету и попробуйте ещё раз.';
+    }
+
+    setUILoading(false);
+    document.getElementById('chat-box').scrollTop = 99999;
+}
+
+document.getElementById('userInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
 });
 </script>
 
